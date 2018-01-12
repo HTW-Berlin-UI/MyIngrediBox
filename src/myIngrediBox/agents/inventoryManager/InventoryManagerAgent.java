@@ -2,7 +2,7 @@ package myIngrediBox.agents.inventoryManager;
 
 import jade.core.Agent;
 import jade.core.behaviours.SequentialBehaviour;
-import myIngrediBox.shared.behaviours.ReadIngredientsFromFile;
+import myIngrediBox.shared.behaviours.ReadFromFile;
 
 public class InventoryManagerAgent extends Agent {
 
@@ -14,12 +14,15 @@ public class InventoryManagerAgent extends Agent {
 	protected void setup() {
 		super.setup();
 
-		ReadIngredientsFromFile loadInventory = new ReadIngredientsFromFile("path");
+		ReadFromFile loadInventory = new ReadFromFile("assets/inventory/inventory.json");
+		ParseInventory parseInventory = new ParseInventory();
 		SequentialBehaviour manageInventory = new SequentialBehaviour();
 
 		manageInventory.addSubBehaviour(loadInventory);
+		manageInventory.addSubBehaviour(parseInventory);
 
 		loadInventory.setDataStore(manageInventory.getDataStore());
+		parseInventory.setDataStore(manageInventory.getDataStore());
 
 		this.addBehaviour(manageInventory);
 	}
