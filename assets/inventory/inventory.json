@@ -1,0 +1,34 @@
+{
+    "inventory": [
+        {
+            "name": "Mehl",
+            "type": "solid",
+            "unit": "g",
+            "quantity": 500
+        },
+        {
+            "name": "Salz",
+            "type": "solid",
+            "unit": "g",
+            "quantity": 100
+        },
+        {
+            "name": "Milch",
+            "type": "liquid",
+            "unit": "ml",
+            "quantity": 1000
+        },
+        {
+            "name": "Eier",
+            "type": "misc",
+            "unit": "Stück",
+            "quantity": 6
+        },
+        {
+            "name": "Butterschmalz",
+            "type": "solid",
+            "unit": "g",
+            "quantity": 250
+        }
+    ]
+}

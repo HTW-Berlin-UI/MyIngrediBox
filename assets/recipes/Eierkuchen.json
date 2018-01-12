@@ -1,0 +1,37 @@
+{
+    "name": "Eierkuchen",
+    "portions": 8,
+    "link": "https://www.essen-und-trinken.de/rezepte/54712-rzpt-pfannkuchen-grundrezept",
+    "ingredients": [
+        {
+            "name": "Mehl",
+            "type": "solid",
+            "unit": "g",
+            "quantity": 150
+        },
+        {
+            "name": "Salz",
+            "type": "solid",
+            "unit": "g",
+            "quantity": 2
+        },
+        {
+            "name": "Milch",
+            "type": "liquid",
+            "unit": "ml",
+            "quantity": 0.25
+        },
+        {
+            "name": "Eier",
+            "type": "misc",
+            "unit": "Stück",
+            "quantity": 2
+        },
+        {
+            "name": "Butterschmalz",
+            "type": "solid",
+            "unit": "g",
+            "quantity": 20
+        }
+    ]
+}
