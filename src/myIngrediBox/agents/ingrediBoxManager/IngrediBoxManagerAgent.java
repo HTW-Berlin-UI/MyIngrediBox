@@ -2,7 +2,6 @@ package myIngrediBox.agents.ingrediBoxManager;
 
 import myIngrediBox.agents.inventoryManager.ParseInventory;
 import myIngrediBox.shared.behaviours.ReadFromFile;
-import myIngrediBox.shared.behaviours.RequestServiceBehaviour;
 import myIngrediBox.shared.classes.ServiceSearcher;
 
 import java.util.Vector;
@@ -27,21 +26,12 @@ public class IngrediBoxManagerAgent extends Agent {
 		super.setup();
 		SequentialBehaviour manageIngrediBox = new SequentialBehaviour();
 
-		
 		ReadFromFile loadRecipe = new ReadFromFile("assets/recipes/Eierkuchen.json");
 		ParseInventory parseRecipe = new ParseInventory();
-		
-		//RequestServiceBehaviour requestServiceBehaviour = new RequestServiceBehaviour(this, "PassIngredientsFromInventory-Service");
-		//requestServiceBehaviour.setDataStore(manageIngrediBox.getDataStore());
-		
-		//manageIngrediBox.setDataStore(requestServiceBehaviour.getDataStore());
-		
-		//InventoryManagerAgent = (AID) requestServiceBehaviour.getDataStore().get("ServiceProviderAgent");
-		
+				
 		manageIngrediBox.addSubBehaviour(new IngredientRequestBehaviour(this));
 		this.addBehaviour(manageIngrediBox);
 
-		//this.addBehaviour(new IngredientRequestBehaviour(this));
 	}
 	
 	@Override
@@ -60,7 +50,7 @@ public class IngrediBoxManagerAgent extends Agent {
 
 		public void onStart()
 		{
-			//Servie-suchen-SubBehaviour (DF anfragen):  (adding DF querying for ClockAgent)
+			//Service-search-SubBehaviour
 			this.addSubBehaviour(new SimpleBehaviour() {
 
 				@Override
@@ -92,8 +82,7 @@ public class IngrediBoxManagerAgent extends Agent {
 				protected Vector prepareRequests(ACLMessage request)
 				{
 					Vector v = super.prepareRequests(request);
-					//Kurzschreibweise: de.wikibooks.org/wiki/Java_Standard:_Kontrollstrukturen#Ablauf_einer_for-Schleife
-					for (Object o : v) //= 'iteriere über alle Objekte o in Vector v'
+					for (Object o : v)
 					{
 						ACLMessage m = (ACLMessage) o;
 						m.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
@@ -131,6 +120,6 @@ public class IngrediBoxManagerAgent extends Agent {
 			InventoryManagerAgent = null;
 		}
 
-	} // End:private class TimeRequestBehaviour
+	} // End:private class IngredientRequestBehaviour
 
 }
