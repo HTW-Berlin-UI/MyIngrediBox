@@ -1,7 +1,6 @@
 package myIngrediBox.agents.ingrediBoxManager;
 
-import myIngrediBox.agents.inventoryManager.ParseInventory;
-import myIngrediBox.shared.behaviours.ReadFromFile;
+
 import myIngrediBox.shared.classes.ServiceSearcher;
 
 import java.util.Vector;
@@ -25,9 +24,6 @@ public class IngrediBoxManagerAgent extends Agent {
 	{
 		super.setup();
 		SequentialBehaviour manageIngrediBox = new SequentialBehaviour();
-
-		ReadFromFile loadRecipe = new ReadFromFile("assets/recipes/Eierkuchen.json");
-		ParseInventory parseRecipe = new ParseInventory();
 				
 		manageIngrediBox.addSubBehaviour(new IngredientRequestBehaviour(this));
 		this.addBehaviour(manageIngrediBox);
@@ -43,6 +39,9 @@ public class IngrediBoxManagerAgent extends Agent {
 	
 	private class IngredientRequestBehaviour extends SequentialBehaviour
 	{
+
+		private static final long serialVersionUID = 1L;
+
 		public IngredientRequestBehaviour(Agent a)
 		{
 			super(a);
