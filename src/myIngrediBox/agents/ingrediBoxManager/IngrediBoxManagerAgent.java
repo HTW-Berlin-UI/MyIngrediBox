@@ -10,33 +10,37 @@ import jade.core.Agent;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.FIPANames;
+import jade.domain.FIPAAgentManagement.NotUnderstoodException;
+import jade.domain.FIPAAgentManagement.RefuseException;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 import jade.proto.AchieveREInitiator;
+import jade.proto.AchieveREResponder;
 
 public class IngrediBoxManagerAgent extends Agent {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private AID InventoryManagerAgent = null;
-	
+
 	@Override
 	protected void setup()
 	{
 		super.setup();
 		SequentialBehaviour manageIngrediBox = new SequentialBehaviour();
-				
+
 		manageIngrediBox.addSubBehaviour(new IngredientRequestBehaviour(this));
 		this.addBehaviour(manageIngrediBox);
 
 	}
-	
+
 	@Override
 	protected void takeDown()
-	
+
 	{
 		super.takeDown();
 	}
-	
+
 	private class IngredientRequestBehaviour extends SequentialBehaviour
 	{
 
@@ -69,11 +73,11 @@ public class IngrediBoxManagerAgent extends Agent {
 					}
 					return ret;
 				}
-					
+
 			}); // End: this.addSubBehaviour
 
 			ACLMessage m = new ACLMessage(ACLMessage.REQUEST);
-			
+
 			// A-RE-I-Behaviour to send, receive and handle refuse
 			this.addSubBehaviour(new AchieveREInitiator(this.myAgent, m) {
 

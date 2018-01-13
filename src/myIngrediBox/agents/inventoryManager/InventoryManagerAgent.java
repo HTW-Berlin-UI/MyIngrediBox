@@ -48,6 +48,7 @@ public class InventoryManagerAgent extends Agent {
 			@Override
 			protected ACLMessage handleRequest(ACLMessage request) throws NotUnderstoodException, RefuseException
 			{
+				System.out.println("Request message content: " + request.getContent());
 				ACLMessage response = request.createReply();
 				try // valid dateformat?
 				{
