@@ -6,11 +6,7 @@ public class Ingredient implements Concept {
 
 	private String name;
 	private double quantity;
-	private String unit;
-	
-	
-	
-	
+	private Unit unit;
 	
 	public Ingredient()
 	{
@@ -36,12 +32,12 @@ public class Ingredient implements Concept {
 		this.quantity = quantity;
 	}
 
-	public String getUnit()
+	public Unit getUnit()
 	{
 		return unit;
 	}
 
-	public void setUnit(String unit)
+	public void setUnit(Unit unit)
 	{
 		this.unit = unit;
 	}
