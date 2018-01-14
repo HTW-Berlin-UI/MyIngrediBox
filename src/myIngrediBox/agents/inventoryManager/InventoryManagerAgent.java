@@ -23,7 +23,7 @@ public class InventoryManagerAgent extends Agent {
 	protected void setup() {
 		super.setup();
 		//Register Service
-		RegisterServiceBehaviour registerServiceBehaviour = new RegisterServiceBehaviour(this, "PassIngredientsFromInventory-Service");
+		RegisterServiceBehaviour registerServiceBehaviour = new RegisterServiceBehaviour(this, "Inventory-Managing-Service");
 
 		//Load Inventory
 		ReadFromFile loadInventory = new ReadFromFile("assets/inventory/inventory.json");
