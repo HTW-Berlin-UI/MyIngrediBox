@@ -6,25 +6,21 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import myIngrediBox.agents.inventoryManager.InventoryManagerAgent;
 
-public class RegisterServiceBehaviour extends OneShotBehaviour
-{
+public class RegisterServiceBehaviour extends OneShotBehaviour {
 
 	private static final long serialVersionUID = 1L;
 	private String serviceType;
 	private Agent a;
-	
-	public RegisterServiceBehaviour(Agent a, String serviceType)
-	{
+
+	public RegisterServiceBehaviour(Agent a, String serviceType) {
 		this.a = a;
 		this.serviceType = serviceType;
 	}
 
-
 	@Override
 	public void action()
-	
+
 	{
 
 		// Register a service with DF
@@ -36,17 +32,21 @@ public class RegisterServiceBehaviour extends OneShotBehaviour
 		sd.setName(a.getLocalName() + "-" + serviceType);
 
 		// add Ontologies, Languages, Interaction Protocols here
-		//sd.addOntologies( this.ontology.getName() );
+		// sd.addOntologies( this.ontology.getName() );
 
 		dfd.addServices(sd);
 
-		try
-		{
+		try {
 			DFService.register(a, dfd);
-		} catch (FIPAException fe)
-		{
+		} catch (FIPAException fe) {
 			fe.printStackTrace();
 		}
+	}
+
+	public void reset() {
+		super.reset();
+		this.a = null;
+		this.serviceType = null;
 	}
 
 }
