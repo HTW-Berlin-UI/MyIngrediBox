@@ -1,34 +1,34 @@
 package myIngrediBox.agents.ingrediBoxManager;
 
-import myIngrediBox.shared.behaviours.DFQueryBehaviour;
-import java.util.ArrayList;
-import java.util.Vector;
-import jade.core.AID;
+import jade.content.lang.Codec;
+import jade.content.lang.sl.SLCodec;
+import jade.content.onto.Ontology;
 import jade.core.Agent;
-import jade.core.behaviours.SequentialBehaviour;
-import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.WakerBehaviour;
-import jade.domain.DFService;
-import jade.domain.FIPAException;
-import jade.domain.FIPANames;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.NotUnderstoodException;
-import jade.domain.FIPAAgentManagement.RefuseException;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
-import jade.proto.AchieveREInitiator;
-import jade.proto.AchieveREResponder;
+import myIngrediBox.ontologies.IngrediBoxOntology;
+import myIngrediBox.shared.behaviours.DFQueryBehaviour;
 
-public class IngrediBoxManagerAgent extends Agent
-{
+public class IngrediBoxManagerAgent extends Agent {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * message language FIPA-SL
+	 */
+	private Codec codec = new SLCodec();
+
+	/**
+	 * ontology used for semantic parsing
+	 */
+	private Ontology ontology = IngrediBoxOntology.getInstance();
+
 	@Override
-	protected void setup()
-	{
+	protected void setup() {
 		super.setup();
+
+		this.getContentManager().registerLanguage(codec);
+		this.getContentManager().registerOntology(ontology);
 
 		DFQueryBehaviour dfQueryBehaviour = new DFQueryBehaviour(this, "Inventory-Managing-Service");
 
@@ -37,8 +37,7 @@ public class IngrediBoxManagerAgent extends Agent
 
 			private static final long serialVersionUID = 1L;
 
-			protected void onWake()
-			{
+			protected void onWake() {
 				this.myAgent.addBehaviour(dfQueryBehaviour);
 
 				// register adapted AchieveREINitiator Behaviour

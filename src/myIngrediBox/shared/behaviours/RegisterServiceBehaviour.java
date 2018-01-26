@@ -33,6 +33,7 @@ public class RegisterServiceBehaviour extends OneShotBehaviour {
 
 		// add Ontologies, Languages, Interaction Protocols here
 		// sd.addOntologies( this.ontology.getName() );
+		// TODO
 
 		dfd.addServices(sd);
 
