@@ -1,5 +1,7 @@
 package myIngrediBox.agents.ingrediBoxManager;
 
+import java.util.ArrayList;
+
 import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
 import jade.content.onto.Ontology;
@@ -7,11 +9,14 @@ import jade.core.Agent;
 import jade.core.behaviours.WakerBehaviour;
 import jade.lang.acl.ACLMessage;
 import myIngrediBox.ontologies.IngrediBoxOntology;
+import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.shared.behaviours.DFQueryBehaviour;
 
 public class IngrediBoxManagerAgent extends Agent {
 
 	private static final long serialVersionUID = 1L;
+	
+	private ArrayList<Ingredient> recipe;
 
 	/**
 	 * message language FIPA-SL
@@ -59,6 +64,14 @@ public class IngrediBoxManagerAgent extends Agent {
 
 	{
 		super.takeDown();
+	}
+	
+	public ArrayList<Ingredient> getInventory() {
+		return recipe;
+	}
+
+	public void setInventory(ArrayList<Ingredient> inventory) {
+		this.recipe = inventory;
 	}
 
 }
