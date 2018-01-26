@@ -63,7 +63,7 @@ public class InventoryManagerAgent extends Agent {
 
 		// Load Inventory
 		ReadFromFile loadInventory = new ReadFromFile("assets/inventory/inventory.json");
-		ParseRecipe parseInventory = new ParseRecipe();
+		ParseInventory parseInventory = new ParseInventory();
 		PrintIngredientList printIngredientBehaviour = new PrintIngredientList(this.inventory);
 		SequentialBehaviour manageInventory = new SequentialBehaviour();
 
