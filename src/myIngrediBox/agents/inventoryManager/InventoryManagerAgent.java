@@ -1,5 +1,7 @@
 package myIngrediBox.agents.inventoryManager;
 
+import java.util.ArrayList;
+
 import jade.content.ContentElement;
 import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
@@ -15,11 +17,23 @@ import jade.lang.acl.MessageTemplate;
 import jade.proto.AchieveREResponder;
 import myIngrediBox.ontologies.HasIngredient;
 import myIngrediBox.ontologies.IngrediBoxOntology;
+import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.shared.behaviours.DeregisterServiceBehaviour;
+import myIngrediBox.shared.behaviours.PrintIngredientList;
 import myIngrediBox.shared.behaviours.ReadFromFile;
 import myIngrediBox.shared.behaviours.RegisterServiceBehaviour;
 
 public class InventoryManagerAgent extends Agent {
+
+	private ArrayList<Ingredient> inventory;
+
+	public ArrayList<Ingredient> getInventory() {
+		return inventory;
+	}
+
+	public void setInventory(ArrayList<Ingredient> inventory) {
+		this.inventory = inventory;
+	}
 
 	/**
 	 * 
@@ -45,14 +59,18 @@ public class InventoryManagerAgent extends Agent {
 		this.getContentManager().registerLanguage(codec);
 		this.getContentManager().registerOntology(ontology);
 
+		// this.inventory = new ArrayList<Ingredient>();
+
 		// Load Inventory
 		ReadFromFile loadInventory = new ReadFromFile("assets/inventory/inventory.json");
 		ParseInventory parseInventory = new ParseInventory();
+		PrintIngredientList printIngredientBehaviour = new PrintIngredientList(this.inventory);
 		SequentialBehaviour manageInventory = new SequentialBehaviour();
 
 		manageInventory.addSubBehaviour(loadInventory);
 		manageInventory.addSubBehaviour(parseInventory);
 		manageInventory.addSubBehaviour(registerServiceBehaviour);
+		manageInventory.addSubBehaviour(printIngredientBehaviour);
 
 		loadInventory.setDataStore(manageInventory.getDataStore());
 		parseInventory.setDataStore(manageInventory.getDataStore());

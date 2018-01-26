@@ -3,31 +3,31 @@
         {
             "name": "Mehl",
             "type": "solid",
-            "unit": "g",
-            "quantity": 500
+            "unit": "Kilo",
+            "quantity": 0.5
         },
         {
             "name": "Salz",
             "type": "solid",
-            "unit": "g",
+            "unit": "Kilo",
             "quantity": 100
         },
         {
             "name": "Milch",
             "type": "liquid",
-            "unit": "ml",
+            "unit": "Liter",
             "quantity": 1000
         },
         {
             "name": "Eier",
             "type": "misc",
-            "unit": "Stück",
+            "unit": "Piece",
             "quantity": 6
         },
         {
             "name": "Butterschmalz",
             "type": "solid",
-            "unit": "g",
+            "unit": "Kilo",
             "quantity": 250
         }
     ]

@@ -3,35 +3,29 @@ package myIngrediBox.ontologies;
 import jade.content.Predicate;
 import jade.core.AID;
 
-public class HasIngredient implements Predicate
-{
+public class HasIngredient implements Predicate {
 	private AID owner;
 	private Ingredient ingredient;
-	
-	
-	public HasIngredient()
-	{
+
+	public HasIngredient() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public AID getOwner()
-	{
+
+	public AID getOwner() {
 		return owner;
 	}
-	public void setOwner(AID owner)
-	{
+
+	public void setOwner(AID owner) {
 		this.owner = owner;
 	}
-	public Ingredient getIngredient()
-	{
+
+	public Ingredient getIngredient() {
 		return ingredient;
 	}
-	public void setIngredient(Ingredient ingredient)
-	{
+
+	public void setIngredient(Ingredient ingredient) {
 		this.ingredient = ingredient;
 	}
-	
-	
-	
 
 }
