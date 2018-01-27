@@ -77,7 +77,7 @@ public class InventoryManagerAgent extends Agent {
 
 			@Override
 			protected ACLMessage handleRequest(ACLMessage request) throws NotUnderstoodException, RefuseException {
-				System.out.println("Request message content: " + request.getContent());
+				System.out.println("\nRequest message content: " + request.getContent());
 				ACLMessage response = request.createReply();
 				try // valid dateformat?
 				{
@@ -86,7 +86,7 @@ public class InventoryManagerAgent extends Agent {
 					ce = getContentManager().extractContent(request);
 					if (ce instanceof HasIngredient) {
 						HasIngredient hasIngredient = (HasIngredient) ce; // now do something
-						System.out.println("ich habe anfrage fÃ¼r: " + hasIngredient.getIngredient().getName());
+						System.out.println("\nich habe anfrage für: " + hasIngredient.getIngredient().getName());
 					}
 
 				} catch (Exception e) {

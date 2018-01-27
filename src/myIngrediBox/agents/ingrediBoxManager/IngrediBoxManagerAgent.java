@@ -63,7 +63,7 @@ public class IngrediBoxManagerAgent extends Agent {
 		DFQueryBehaviour dfQueryBehaviour = new DFQueryBehaviour(this, "Inventory-Managing-Service");
 
 		// for testing normal way would be user-interaction or another system
-		this.addBehaviour(new WakerBehaviour(this, 5000) {
+		this.addBehaviour(new WakerBehaviour(this, 250) {
 
 			private static final long serialVersionUID = 1L;
 

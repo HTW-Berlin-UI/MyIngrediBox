@@ -59,11 +59,18 @@ public class InventoryRequest extends AchieveREInitiator {
 		mehl.setName("Mehl");
 		mehl.setQuantity(0.5);
 		mehl.setUnit(Unit.Kilo);
+		
+		// test ingredient 2
+		Ingredient salz = new Ingredient();
+		salz.setName("Salz");
+		salz.setQuantity(0.25);
+		salz.setUnit(Unit.Kilo);
 
 		HasIngredient hasIngredient = new HasIngredient();
 
 		hasIngredient.setOwner(this.getAgent().getAID());
 		hasIngredient.setIngredient(mehl);
+		hasIngredient.setIngredient(salz);
 
 		request.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
 		request.setOntology(ontology.getName()); // myAgent
@@ -124,7 +131,7 @@ public class InventoryRequest extends AchieveREInitiator {
 	 */
 	@Override
 	protected void handleAgree(ACLMessage agree) {
-		System.out.println("Agreed: " + agree);
+		System.out.println("\nAgreed: " + agree);
 	}
 
 	/**
@@ -133,7 +140,7 @@ public class InventoryRequest extends AchieveREInitiator {
 	 */
 	@Override
 	protected void handleInform(ACLMessage inform) {
-		System.out.println("Some Inform: " + inform);
+		System.out.println("\nSome Inform: " + inform);
 	}
 
 	/**
@@ -179,11 +186,11 @@ public class InventoryRequest extends AchieveREInitiator {
 				}
 
 			} catch (ClassCastException cce2) {
-				System.out.println("Refuse not understood: " + ce);
+				System.out.println("\nRefuse not understood: " + ce);
 			}
 
 		} else {
-			System.out.println("Refuse with empty Content: " + refuse);
+			System.out.println("\nRefuse with empty Content: " + refuse);
 		}
 
 	}
