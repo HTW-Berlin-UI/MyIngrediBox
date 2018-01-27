@@ -34,7 +34,7 @@ public class DFQueryBehaviour extends SequentialBehaviour {
 					if (dfds.length > 0) {
 						this.getDataStore().put(serviceType, dfds[0].getName());
 
-						System.out.println(serviceType + "Agent found: " + this.getDataStore().get(serviceType));
+						System.out.println("\n" + serviceType + "Agent found: " + this.getDataStore().get(serviceType));
 					}
 				} catch (FIPAException fe) {
 					fe.printStackTrace();
