@@ -1,4 +1,4 @@
-package myIngrediBox.agents.inventoryManager;
+package myIngrediBox.agents.ingrediBoxManager;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -7,10 +7,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import jade.core.behaviours.OneShotBehaviour;
+import myIngrediBox.agents.inventoryManager.InventoryManagerAgent;
 import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.ontologies.Unit;
 
-public class ParseInventory extends OneShotBehaviour {
+public class ParseRecipe extends OneShotBehaviour
+{
 
 	/**
 	 * 
@@ -18,18 +20,19 @@ public class ParseInventory extends OneShotBehaviour {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void action() {
+	public void action()
+	{
 		// TODO Auto-generated method stub
-
-		InventoryManagerAgent inventoryManager = (InventoryManagerAgent) this.getAgent();
+		
+		IngrediBoxManagerAgent ingrediBoxManagerAgent =  (IngrediBoxManagerAgent) this.getAgent();
 
 		JSONObject rawData = (JSONObject) this.getDataStore().get("rawData");
 
-		JSONArray inventory = (JSONArray) rawData.get("inventory");
+		JSONArray recipe = (JSONArray) rawData.get("ingredients");
+		
+		ArrayList<Ingredient> tempRecipe = new ArrayList<Ingredient>();
 
-		ArrayList<Ingredient> tempIngredients = new ArrayList<Ingredient>();
-
-		Iterator<JSONObject> iterator = inventory.iterator();
+		Iterator<JSONObject> iterator = recipe.iterator();
 		while (iterator.hasNext()) {
 
 			Ingredient ingredient = new Ingredient();
@@ -41,12 +44,10 @@ public class ParseInventory extends OneShotBehaviour {
 			ingredient.setQuantity(Double.parseDouble(rawIngredient.get("quantity").toString()));
 			ingredient.setUnit(Unit.valueOf(rawIngredient.get("unit").toString()));
 
-			tempIngredients.add(ingredient);
-
+			tempRecipe.add(ingredient);
 		}
 
-		inventoryManager.setInventory(tempIngredients);
-
+		ingrediBoxManagerAgent.setRecipe(tempRecipe);
 	}
 
 }

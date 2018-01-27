@@ -4,18 +4,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import jade.core.behaviours.OneShotBehaviour;
+import myIngrediBox.agents.ingrediBoxManager.IngrediBoxManagerAgent;
 import myIngrediBox.agents.inventoryManager.InventoryManagerAgent;
 import myIngrediBox.ontologies.Ingredient;
 
-public class PrintIngredientList extends OneShotBehaviour {
-
+public class PrintRecipeIngredientList extends OneShotBehaviour
+{
 	private ArrayList<Ingredient> ingredients;
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public PrintIngredientList(ArrayList<Ingredient> ingredients) {
+	public PrintRecipeIngredientList(ArrayList<Ingredient> ingredients) {
 		super();
 		this.ingredients = ingredients;
 	}
@@ -23,18 +24,17 @@ public class PrintIngredientList extends OneShotBehaviour {
 	@Override
 	public void action() {
 		// TODO Auto-generated method stub
-		InventoryManagerAgent inventoryManager = (InventoryManagerAgent) this.getAgent();
+		IngrediBoxManagerAgent ingrediBoxManagerAgent = (IngrediBoxManagerAgent) this.getAgent();
 
-		Iterator<Ingredient> iterator = inventoryManager.getInventory().iterator();
+		Iterator<Ingredient> iterator = ingrediBoxManagerAgent.getRecipe().iterator();
 
-		System.out.println("\nInventory:");
+		System.out.println("\nRecipe:");
 		while (iterator.hasNext()) {
-			Ingredient ingredient = iterator.next();
+			Ingredient ingredient = iterator.next();	//!!ClassCastExeption
 			System.out.print(ingredient.getName() + "\t");
 			System.out.print(ingredient.getQuantity() + "\t");
 			System.out.println(ingredient.getUnit());
 		}
 
 	}
-
 }

@@ -27,17 +27,6 @@ public class InventoryManagerAgent extends Agent {
 
 	private ArrayList<Ingredient> inventory;
 
-	public ArrayList<Ingredient> getInventory() {
-		return inventory;
-	}
-
-	public void setInventory(ArrayList<Ingredient> inventory) {
-		this.inventory = inventory;
-	}
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -132,6 +121,14 @@ public class InventoryManagerAgent extends Agent {
 	protected void takeDown() {
 		super.takeDown();
 		this.addBehaviour(new DeregisterServiceBehaviour(this));
+	}
+	
+	public ArrayList<Ingredient> getInventory() {
+		return inventory;
+	}
+
+	public void setInventory(ArrayList<Ingredient> inventory) {
+		this.inventory = inventory;
 	}
 
 }

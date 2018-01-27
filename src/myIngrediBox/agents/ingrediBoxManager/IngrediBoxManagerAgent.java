@@ -1,17 +1,27 @@
 package myIngrediBox.agents.ingrediBoxManager;
 
+import java.util.ArrayList;
+
 import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
 import jade.content.onto.Ontology;
 import jade.core.Agent;
+import jade.core.behaviours.SequentialBehaviour;
 import jade.core.behaviours.WakerBehaviour;
 import jade.lang.acl.ACLMessage;
 import myIngrediBox.ontologies.IngrediBoxOntology;
+import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.shared.behaviours.DFQueryBehaviour;
+import myIngrediBox.shared.behaviours.PrintIngredientList;
+import myIngrediBox.shared.behaviours.PrintRecipeIngredientList;
+import myIngrediBox.shared.behaviours.ReadFromFile;
 
 public class IngrediBoxManagerAgent extends Agent {
 
 	private static final long serialVersionUID = 1L;
+	
+	private ArrayList<Ingredient> recipe;
+
 
 	/**
 	 * message language FIPA-SL
@@ -26,9 +36,29 @@ public class IngrediBoxManagerAgent extends Agent {
 	@Override
 	protected void setup() {
 		super.setup();
+		
+		this.recipe = new ArrayList<Ingredient>();
+
+		
+		// Load Recipe
+		ReadFromFile loadRecipe = new ReadFromFile("assets/recipes/Eierkuchen.json");
+		ParseRecipe parseRecipe = new ParseRecipe();	
+		PrintRecipeIngredientList printRecipeIngredientBehaviour = new PrintRecipeIngredientList(this.recipe);
+
+		SequentialBehaviour manageRecipe = new SequentialBehaviour();
+		loadRecipe.setDataStore(manageRecipe.getDataStore());
+		parseRecipe.setDataStore(manageRecipe.getDataStore());
+		
+		manageRecipe.addSubBehaviour(loadRecipe);
+		manageRecipe.addSubBehaviour(parseRecipe);
+		manageRecipe.addSubBehaviour(printRecipeIngredientBehaviour);
+		
+		this.addBehaviour(manageRecipe);
 
 		this.getContentManager().registerLanguage(codec);
 		this.getContentManager().registerOntology(ontology);
+		
+	
 
 		DFQueryBehaviour dfQueryBehaviour = new DFQueryBehaviour(this, "Inventory-Managing-Service");
 
@@ -59,6 +89,15 @@ public class IngrediBoxManagerAgent extends Agent {
 
 	{
 		super.takeDown();
+	}
+	
+	public void setRecipe(ArrayList<Ingredient> recipe) {
+		this.recipe = recipe;
+	}
+
+	public ArrayList<Ingredient> getRecipe()
+	{
+		return recipe;
 	}
 
 }
