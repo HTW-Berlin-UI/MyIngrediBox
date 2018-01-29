@@ -1,5 +1,6 @@
 package myIngrediBox.agents.ingrediBoxManager;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 import jade.content.ContentElement;
@@ -27,6 +28,7 @@ import myIngrediBox.ontologies.Unit;
 
 public class InventoryRequest extends AchieveREInitiator {
 
+	Ingredient requestedIngredient;
 	/**
 	 * message language FIPA-SL
 	 */
@@ -46,6 +48,11 @@ public class InventoryRequest extends AchieveREInitiator {
 	public InventoryRequest(Agent a, ACLMessage msg) {
 		super(a, msg);
 	}
+	
+	public InventoryRequest(Agent a, ACLMessage msg, Ingredient ingredient) {
+		super(a, msg);
+		this.requestedIngredient = ingredient;
+	}
 
 	/**
 	 * prepares the ACLMessage(s) for Requesting Ingredients
@@ -53,25 +60,20 @@ public class InventoryRequest extends AchieveREInitiator {
 	@Override
 	protected Vector prepareRequests(ACLMessage request) {
 		Vector v = new Vector();
-
-		// test ingredient
-		Ingredient mehl = new Ingredient();
-		mehl.setName("Mehl");
-		mehl.setQuantity(0.5);
-		mehl.setUnit(Unit.Kilo);
 		
-		// test ingredient 2
-		Ingredient salz = new Ingredient();
-		salz.setName("Salz");
-		salz.setQuantity(0.25);
-		salz.setUnit(Unit.Kilo);
-
 		HasIngredient hasIngredient = new HasIngredient();
 
+		// test ingredient
+//		Ingredient mehl = new Ingredient();
+//		mehl.setName("Mehl");
+//		mehl.setQuantity(0.5);
+//		mehl.setUnit(Unit.Kilo);
+		
+//		hasIngredient.setIngredient(mehl);
+		
+		hasIngredient.setIngredient(requestedIngredient);
 		hasIngredient.setOwner(this.getAgent().getAID());
-		hasIngredient.setIngredient(mehl);
-		hasIngredient.setIngredient(salz);
-
+		
 		request.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
 		request.setOntology(ontology.getName()); // myAgent
 		request.addReceiver((AID) this.getDataStore().get("Inventory-Managing-Service"));
@@ -79,6 +81,7 @@ public class InventoryRequest extends AchieveREInitiator {
 
 		try {
 			this.getAgent().getContentManager().fillContent(request, hasIngredient);
+			
 		} catch (CodecException | OntologyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -119,7 +122,7 @@ public class InventoryRequest extends AchieveREInitiator {
 		// e.printStackTrace();
 		// }
 
-		// TODO request Message anh�ngen...
+	
 
 		v.add(request);
 

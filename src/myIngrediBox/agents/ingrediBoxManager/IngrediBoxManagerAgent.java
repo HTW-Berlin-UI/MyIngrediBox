@@ -1,6 +1,7 @@
 package myIngrediBox.agents.ingrediBoxManager;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
@@ -9,6 +10,7 @@ import jade.core.Agent;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.core.behaviours.WakerBehaviour;
 import jade.lang.acl.ACLMessage;
+import myIngrediBox.ontologies.HasIngredient;
 import myIngrediBox.ontologies.IngrediBoxOntology;
 import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.shared.behaviours.DFQueryBehaviour;
@@ -73,11 +75,22 @@ public class IngrediBoxManagerAgent extends Agent {
 				// register adapted AchieveREINitiator Behaviour
 				ACLMessage m = new ACLMessage(ACLMessage.REQUEST);
 				m.setContent("Hi, this is an InventoryRequest");
-
-				InventoryRequest inventoryRequest = new InventoryRequest(myAgent, m);
-				inventoryRequest.setDataStore(dfQueryBehaviour.getDataStore());
-
-				this.myAgent.addBehaviour(inventoryRequest);
+				
+				Ingredient ingredientToRequest = new Ingredient();
+				
+				Iterator<Ingredient> iterator = getRecipe().iterator();
+				while(iterator.hasNext()) {
+					ingredientToRequest = iterator.next();
+					if(ingredientToRequest!=null) {
+						InventoryRequest inventoryRequest = new InventoryRequest(myAgent, m, ingredientToRequest);
+						inventoryRequest.setDataStore(dfQueryBehaviour.getDataStore());
+						this.myAgent.addBehaviour(inventoryRequest);
+						
+						//oder inventoryRequest.setIngredientToRequest(itreq);...
+					}
+				}
+				
+			
 			}
 
 		});
