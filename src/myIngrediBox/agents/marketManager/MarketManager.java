@@ -7,6 +7,9 @@ import jade.content.lang.sl.SLCodec;
 import jade.content.onto.Ontology;
 import jade.core.Agent;
 import jade.core.behaviours.SequentialBehaviour;
+import jade.domain.FIPANames;
+import jade.lang.acl.MessageTemplate;
+import jade.proto.ContractNetResponder;
 import myIngrediBox.ontologies.IngrediBoxOntology;
 import myIngrediBox.ontologies.PurchasableIngredient;
 import myIngrediBox.shared.behaviours.ReadFromFile;
@@ -71,6 +74,13 @@ public class MarketManager extends Agent {
 		ParseStock parseStock = new ParseStock();
 		manageStockThanTrade.addSubBehaviour(parseStock);
 		parseStock.setDataStore(manageStockThanTrade.getDataStore());
+
+		// serve buyer request
+		MessageTemplate mt = ContractNetResponder
+				.createMessageTemplate(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET);
+		ServeBuyer serveBuyer = new ServeBuyer(this, mt);
+		manageStockThanTrade.addSubBehaviour(serveBuyer);
+		serveBuyer.setDataStore(manageStockThanTrade.getDataStore());
 
 		// add stock trading behaviour to agent
 		this.addBehaviour(manageStockThanTrade);
