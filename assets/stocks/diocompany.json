@@ -1,0 +1,39 @@
+{
+    "inventory": [
+        {
+            "name": "Mehl",
+            "type": "solid",
+            "unit": "Kilo",
+            "quantity": 0.5,
+            "price": 3
+        },
+        {
+            "name": "Salz",
+            "type": "solid",
+            "unit": "Kilo",
+            "quantity": 100,
+            "price": 2
+        },
+        {
+            "name": "Milch",
+            "type": "liquid",
+            "unit": "Liter",
+            "quantity": 1000,
+            "price": 2
+        },
+        {
+            "name": "Eier",
+            "type": "misc",
+            "unit": "Piece",
+            "quantity": 6,
+            "price": 2
+        },
+        {
+            "name": "Butterschmalz",
+            "type": "solid",
+            "unit": "Kilo",
+            "quantity": 250,
+            "price": 3
+        }
+    ]
+}
