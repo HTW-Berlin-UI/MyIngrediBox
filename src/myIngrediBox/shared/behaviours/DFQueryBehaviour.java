@@ -36,6 +36,10 @@ public class DFQueryBehaviour extends SimpleBehaviour {
 				providers.add(df.getName());
 				System.out.println("\n" + serviceType + " Agent found: " + df.getName());
 			}
+		} catch (FIPAException fe) {
+			fe.printStackTrace();
+		}
+	}
 
 			if (providers.size() > 0) {
 
