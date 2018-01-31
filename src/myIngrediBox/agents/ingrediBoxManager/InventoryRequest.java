@@ -75,6 +75,7 @@ public class InventoryRequest extends AchieveREInitiator {
 		salz.setQuantity(0.25);
 		salz.setUnit(Unit.Kilo);
 
+		hasIngredient.setIngredient(requestedIngredient);
 		hasIngredient.setOwner(this.getAgent().getAID());
 		
 		request.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
