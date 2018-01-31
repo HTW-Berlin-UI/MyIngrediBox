@@ -1,5 +1,7 @@
 package myIngrediBox.agents.marketManager;
 
+import java.util.ArrayList;
+
 import jade.content.lang.Codec.CodecException;
 import jade.content.onto.OntologyException;
 import jade.content.onto.UngroundedException;
@@ -11,6 +13,8 @@ import jade.domain.FIPAAgentManagement.RefuseException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.ContractNetResponder;
+import myIngrediBox.ontologies.Ingredient;
+import myIngrediBox.ontologies.PurchasableIngredient;
 import myIngrediBox.ontologies.RequestOffer;
 import myIngrediBox.ontologies.TradeIngredients;
 
@@ -36,16 +40,35 @@ public class ServeBuyer extends ContractNetResponder {
 			Action proposalAction = (Action) this.myAgent.getContentManager().extractContent(cfp);
 			RequestOffer requestOffer = (RequestOffer) proposalAction.getAction();
 
-			// TODO collect fitting item and send them back
-			proposal.setPerformative(ACLMessage.PROPOSE);
+			// get the required ingredients list sent by buyer
+			ArrayList<Ingredient> requiredIngredients = requestOffer.getRequiredIngredients();
 
-			TradeIngredients tradeIngredients = new TradeIngredients();
-			tradeIngredients.setIngredients(this.marketManager.getStock());
-			tradeIngredients.setTrader(this.marketManager.getAID());
+			// assuming that we have an infinite stock, we don't operate on the markets
+			// stock object
+			ArrayList<PurchasableIngredient> availableIngredients = (ArrayList<PurchasableIngredient>) this.marketManager
+					.getStock().clone();
 
-			Action responseAction = new Action(requestOffer.getBuyer(), tradeIngredients);
+			// check if the required ingredients are in stock
+			// TODO check for quantities
+			availableIngredients.retainAll(requiredIngredients);
 
-			this.myAgent.getContentManager().fillContent(proposal, responseAction);
+			if (availableIngredients.isEmpty()) {
+				// no fitting ingredients in stock
+				proposal.setPerformative(ACLMessage.REFUSE);
+			} else {
+				// we got some ingredients to offer
+
+				proposal.setPerformative(ACLMessage.PROPOSE);
+
+				TradeIngredients tradeIngredients = new TradeIngredients();
+				tradeIngredients.setIngredients(availableIngredients);
+				tradeIngredients.setTrader(this.marketManager.getAID());
+
+				Action responseAction = new Action(requestOffer.getBuyer(), tradeIngredients);
+
+				this.myAgent.getContentManager().fillContent(proposal, responseAction);
+
+			}
 
 		} catch (UngroundedException e) {
 			e.printStackTrace();

@@ -34,6 +34,20 @@
             "unit": "Kilo",
             "quantity": 250,
             "price": 3
+        },
+        {
+            "name": "Vanille",
+            "type": "misc",
+            "unit": "Piece",
+            "quantity": 1,
+            "price": 5
+        },
+        {
+            "name": "Apfelkompott",
+            "type": "liquid",
+            "unit": "Liter",
+            "quantity": 2,
+            "price": 2.5
         }
     ]
 }

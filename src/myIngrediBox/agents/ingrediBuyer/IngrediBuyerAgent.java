@@ -80,8 +80,9 @@ public class IngrediBuyerAgent extends Agent {
 	private void buyRequiredIngredients() {
 		// add sample list of ingredients to buy
 		requiredIngredients = new ArrayList<Ingredient>();
-		requiredIngredients.add(new Ingredient("Mehl", 0.2, Unit.Kilo));
-		requiredIngredients.add(new Ingredient("Salz", 0.1, Unit.Kilo));
+		requiredIngredients.add(new Ingredient("Vanille", 0.2, Unit.Piece));
+		requiredIngredients.add(new Ingredient("Apfelkompott", 0.1, Unit.Liter));
+		requiredIngredients.add(new Ingredient("Mehl", 0.5, Unit.Kilo));
 
 		/*
 		 * first find markets than start trading

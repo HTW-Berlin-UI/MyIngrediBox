@@ -84,10 +84,14 @@ public class GoShopping extends ContractNetInitiator {
 			// if (sb.getPrice() >= 0 && (this.getDataStore().get("bestOffer") == null
 			// || ((SellBook) this.getDataStore().get("bestOffer")).getPrice() >
 			// sb.getPrice()))
+
+			// this is where to decide what to buy
 			if (!tradeIngredients.getIngredients().isEmpty()) {
-				for (ACLMessage prop : (Vector<ACLMessage>) acceptances) {
-					prop.setPerformative(ACLMessage.REJECT_PROPOSAL);
-				}
+
+				// TODO understand this!
+				// for (ACLMessage prop : (Vector<ACLMessage>) acceptances) {
+				// prop.setPerformative(ACLMessage.REJECT_PROPOSAL);
+				// }
 				reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
 				this.getDataStore().put("boughtIngredients", tradeIngredients.getIngredients());
 			}
@@ -102,6 +106,15 @@ public class GoShopping extends ContractNetInitiator {
 		}
 
 		acceptances.add(reply);
+	}
+
+	@Override
+	protected void handleAllResponses(Vector responses, Vector acceptances) {
+		// TODO Auto-generated method stub
+
+		System.out.println("--------------Alle da-------");
+
+		super.handleAllResponses(responses, acceptances);
 	}
 
 	@Override
