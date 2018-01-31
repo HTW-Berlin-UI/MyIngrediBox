@@ -77,19 +77,13 @@ public class IngrediBoxManagerAgent extends Agent {
 				m.setContent("Hi, this is an InventoryRequest");
 				
 				Ingredient ingredientToRequest = new Ingredient();
+				ingredientToRequest = getRecipe().get(0);
+				InventoryRequest inventoryRequest = new InventoryRequest(myAgent, m, ingredientToRequest);
+				inventoryRequest.setDataStore(dfQueryBehaviour.getDataStore());
+				this.myAgent.addBehaviour(inventoryRequest);
 				
-				Iterator<Ingredient> iterator = getRecipe().iterator();
-				while(iterator.hasNext()) {
-					ingredientToRequest = iterator.next();
-					if(ingredientToRequest!=null) {
-						InventoryRequest inventoryRequest = new InventoryRequest(myAgent, m, ingredientToRequest);
-						inventoryRequest.setDataStore(dfQueryBehaviour.getDataStore());
-						this.myAgent.addBehaviour(inventoryRequest);
-						
-						//oder inventoryRequest.setIngredientToRequest(itreq);...
-					}
-				}
-				
+				//ArrayList senden!!
+				//oder inventoryRequest.setIngredientToRequest(itreq);...bauen
 			
 			}
 
