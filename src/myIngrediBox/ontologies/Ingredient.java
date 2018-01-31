@@ -1,5 +1,7 @@
 package myIngrediBox.ontologies;
 
+import java.util.Objects;
+
 import jade.content.Concept;
 
 public class Ingredient implements Concept {
@@ -52,6 +54,11 @@ public class Ingredient implements Concept {
 		}
 		return false;
 
+	}
+
+	// make this hashable
+	public int hashCode() {
+		return Objects.hash(this.name);
 	}
 
 }

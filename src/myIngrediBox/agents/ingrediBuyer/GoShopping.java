@@ -1,6 +1,7 @@
 package myIngrediBox.agents.ingrediBuyer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Vector;
 
 import jade.content.lang.Codec.CodecException;
@@ -11,16 +12,19 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.proto.ContractNetInitiator;
+import myIngrediBox.ontologies.PurchasableIngredient;
 import myIngrediBox.ontologies.RequestOffer;
 import myIngrediBox.ontologies.TradeIngredients;
 
 public class GoShopping extends ContractNetInitiator {
 
 	private IngrediBuyerAgent buyerAgent;
+	private HashMap<PurchasableIngredient, AID> shoppingList;
 
 	public GoShopping(Agent a, ACLMessage cfp) {
 		super(a, cfp);
 		this.buyerAgent = (IngrediBuyerAgent) a;
+		this.shoppingList = new HashMap<PurchasableIngredient, AID>();
 	}
 
 	/**
@@ -75,26 +79,43 @@ public class GoShopping extends ContractNetInitiator {
 
 	@Override
 	protected void handlePropose(ACLMessage propose, Vector acceptances) {
-		ACLMessage reply = propose.createReply();
-		reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+
 		try {
 			Action a = (Action) this.myAgent.getContentManager().extractContent(propose);
 			TradeIngredients tradeIngredients = (TradeIngredients) a.getAction();
 
-			// if (sb.getPrice() >= 0 && (this.getDataStore().get("bestOffer") == null
-			// || ((SellBook) this.getDataStore().get("bestOffer")).getPrice() >
-			// sb.getPrice()))
-
 			// this is where to decide what to buy
-			if (!tradeIngredients.getIngredients().isEmpty()) {
+			ArrayList<PurchasableIngredient> proposedIngredients = tradeIngredients.getIngredients();
+			if (!proposedIngredients.isEmpty()) {
 
-				// TODO understand this!
-				// for (ACLMessage prop : (Vector<ACLMessage>) acceptances) {
-				// prop.setPerformative(ACLMessage.REJECT_PROPOSAL);
-				// }
-				reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
-				this.getDataStore().put("boughtIngredients", tradeIngredients.getIngredients());
+				for (PurchasableIngredient ingredient : proposedIngredients) {
+
+					// if proposed ingredient is served by another market and is cheaper than the
+					// current one
+					if (this.shoppingList.containsKey(ingredient)) {
+
+						// find the comparable ingredient on shopping list
+						for (PurchasableIngredient ingredientOnList : this.shoppingList.keySet()) {
+							if (ingredientOnList.equals(ingredient)) {
+
+								// now decide whether to replace the item on the list with new ingredient
+								if (ingredient.getPrice() < ingredientOnList.getPrice()) {
+									this.shoppingList.remove(ingredientOnList);
+									this.shoppingList.put(ingredient, a.getActor());
+								}
+
+							}
+
+						}
+
+					} else {
+						// if its a new ingredient to our list
+						this.shoppingList.put(ingredient, a.getActor());
+					}
+
+				}
 			}
+
 		} catch (UngroundedException e) {
 			e.printStackTrace();
 		} catch (CodecException e) {
@@ -105,16 +126,45 @@ public class GoShopping extends ContractNetInitiator {
 			cce.printStackTrace();
 		}
 
-		acceptances.add(reply);
 	}
 
 	@Override
-	protected void handleAllResponses(Vector responses, Vector acceptances) {
-		// TODO Auto-generated method stub
+	protected void handleAllResponses(Vector proposals, Vector acceptances) {
+		// All proposals are in.
+		// now we buy only ingredients on our optimized shopping list
+		for (ACLMessage proposal : (Vector<ACLMessage>) proposals) {
+			ACLMessage reply = proposal.createReply();
+			reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
 
-		System.out.println("--------------Alle da-------");
+			ArrayList<PurchasableIngredient> ingredientsToBuy = new ArrayList<PurchasableIngredient>();
 
-		super.handleAllResponses(responses, acceptances);
+			// if market appears on shopping list than add appropriate ingredients to order
+			for (PurchasableIngredient ingredientOnList : this.shoppingList.keySet()) {
+				if (this.shoppingList.get(ingredientOnList).equals(proposal.getSender()))
+					ingredientsToBuy.add(ingredientOnList);
+			}
+
+			if (!ingredientsToBuy.isEmpty()) {
+				try {
+					reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+
+					TradeIngredients tradeIngredients = new TradeIngredients();
+					tradeIngredients.setIngredients(ingredientsToBuy);
+					tradeIngredients.setTrader(this.buyerAgent.getAID());
+
+					Action responseAction = new Action(this.getAgent().getAID(), tradeIngredients);
+
+					this.buyerAgent.getContentManager().fillContent(reply, responseAction);
+				} catch (CodecException | OntologyException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			acceptances.add(reply);
+		}
+
+		super.handleAllResponses(proposals, acceptances);
 	}
 
 	@Override

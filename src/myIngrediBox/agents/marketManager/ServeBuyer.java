@@ -64,7 +64,7 @@ public class ServeBuyer extends ContractNetResponder {
 				tradeIngredients.setIngredients(availableIngredients);
 				tradeIngredients.setTrader(this.marketManager.getAID());
 
-				Action responseAction = new Action(requestOffer.getBuyer(), tradeIngredients);
+				Action responseAction = new Action(this.getAgent().getAID(), tradeIngredients);
 
 				this.myAgent.getContentManager().fillContent(proposal, responseAction);
 
@@ -98,8 +98,7 @@ public class ServeBuyer extends ContractNetResponder {
 			throws FailureException {
 		ACLMessage response = accept.createReply();
 
-		// check whether price and infos are equal in prop&accept
-		// send the book to the library (RealLive)
+		// now send ingredients back
 
 		response.setPerformative(ACLMessage.INFORM);
 		response.setContent(propose.getContent());
