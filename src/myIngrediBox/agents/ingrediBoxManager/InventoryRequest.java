@@ -1,6 +1,5 @@
 package myIngrediBox.agents.ingrediBoxManager;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 import jade.content.ContentElement;
@@ -64,19 +63,27 @@ public class InventoryRequest extends AchieveREInitiator {
 		HasIngredient hasIngredient = new HasIngredient();
 
 		// test ingredient
-//		Ingredient mehl = new Ingredient();
-//		mehl.setName("Mehl");
-//		mehl.setQuantity(0.5);
-//		mehl.setUnit(Unit.Kilo);
+		Ingredient mehl = new Ingredient();
+		mehl.setName("Mehl");
+		mehl.setQuantity(0.5);
+		mehl.setUnit(Unit.Kilo);
 		
-//		hasIngredient.setIngredient(mehl);
-		
-		hasIngredient.setIngredient(requestedIngredient);
+		// test ingredient 2
+		Ingredient salz = new Ingredient();
+		salz.setName("Salz");
+		salz.setQuantity(0.25);
+		salz.setUnit(Unit.Kilo);
+
+		HasIngredient hasIngredient = new HasIngredient();
+
 		hasIngredient.setOwner(this.getAgent().getAID());
 		
 		request.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
 		request.setOntology(ontology.getName()); // myAgent
-		request.addReceiver((AID) this.getDataStore().get("Inventory-Managing-Service"));
+
+		ArrayList<AID> inventoryManagers = (ArrayList<AID>) this.getDataStore().get("Inventory-Managing-Service");
+
+		request.addReceiver(inventoryManagers.get(0));
 		request.setLanguage(codec.getName());
 
 		try {
