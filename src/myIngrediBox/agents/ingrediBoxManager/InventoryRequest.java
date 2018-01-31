@@ -1,5 +1,6 @@
 package myIngrediBox.agents.ingrediBoxManager;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import jade.content.ContentElement;
@@ -73,8 +74,6 @@ public class InventoryRequest extends AchieveREInitiator {
 		salz.setName("Salz");
 		salz.setQuantity(0.25);
 		salz.setUnit(Unit.Kilo);
-
-		HasIngredient hasIngredient = new HasIngredient();
 
 		hasIngredient.setOwner(this.getAgent().getAID());
 		
