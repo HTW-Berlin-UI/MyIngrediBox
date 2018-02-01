@@ -1,17 +1,24 @@
 package myIngrediBox.ontologies;
 
-import jade.content.*;
+import java.util.Objects;
+
+import jade.content.Concept;
 
 public class Ingredient implements Concept {
 
 	private String name;
 	private double quantity;
 	private Unit unit;
-	
-	public Ingredient()
-	{
+
+	public Ingredient() {
 		super();
-		// TODO Auto-generated constructor stub
+	}
+
+	public Ingredient(String name, double quantity, Unit unit) {
+		super();
+		this.name = name;
+		this.quantity = quantity;
+		this.unit = unit;
 	}
 
 	public String getName() {
@@ -22,26 +29,41 @@ public class Ingredient implements Concept {
 		this.name = name;
 	}
 
-	public double getQuantity()
-	{
+	public double getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(double quantity)
-	{
+	public void setQuantity(double quantity) {
 		this.quantity = quantity;
 	}
 
-	public Unit getUnit()
-	{
+	public Unit getUnit() {
 		return unit;
 	}
 
-	public void setUnit(Unit unit)
-	{
+	public void setUnit(Unit unit) {
 		this.unit = unit;
 	}
-	
-	
+
+	// compare ingredients by name
+	public boolean equals(Object object) {
+		try {
+			Ingredient ingredientToCompare = (Ingredient) object;
+			return this.name.equalsIgnoreCase(ingredientToCompare.name);
+		} catch (ClassCastException cce) {
+		}
+		return false;
+
+	}
+
+	// make this hashable
+	public int hashCode() {
+		return Objects.hash(this.name);
+	}
+
+	// make this printable
+	public String toString() {
+		return this.name + ": " + this.quantity + " " + this.unit;
+	}
 
 }
