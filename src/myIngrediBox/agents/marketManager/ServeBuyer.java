@@ -49,8 +49,12 @@ public class ServeBuyer extends ContractNetResponder {
 					.getStock().clone();
 
 			// check if the required ingredients are in stock
-			// TODO check for quantities
 			availableIngredients.retainAll(requiredIngredients);
+
+			// remove ingredients if quantity is insufficient
+			availableIngredients.removeIf(
+					availableIngredient -> requiredIngredients.get(requiredIngredients.indexOf(availableIngredient))
+							.getQuantity() > availableIngredient.getQuantity());
 
 			if (availableIngredients.isEmpty()) {
 				// no fitting ingredients in stock
@@ -84,14 +88,13 @@ public class ServeBuyer extends ContractNetResponder {
 			throw new NotUnderstoodException(proposal);
 		}
 
-		System.out.println("BSAgent.handleCFP prop: " + proposal);
 		// return proposal or refuse; NOT-Understood leaves by Exception
 		return proposal;
 
 	}
 
 	/**
-	 * the LibAgent wants to buy our too expensive old books, jippi
+	 * Ingredibuyer wants to buy some ingredients
 	 */
 	@Override
 	protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept)
@@ -99,22 +102,11 @@ public class ServeBuyer extends ContractNetResponder {
 		ACLMessage response = accept.createReply();
 
 		// now send ingredients back
-
+		// TODO update stock
 		response.setPerformative(ACLMessage.INFORM);
-		response.setContent(propose.getContent());
-
-		System.out.println("BSA#handleAcceptProposal accept:" + response);
+		response.setContent(accept.getContent());
 
 		return response;
-	}
-
-	/**
-	 * price to high? no deal today
-	 */
-	@Override
-	protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose, ACLMessage reject) {
-		// TODO Auto-generated method stub
-		super.handleRejectProposal(cfp, propose, reject);
 	}
 
 }

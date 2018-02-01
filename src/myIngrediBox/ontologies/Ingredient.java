@@ -61,4 +61,9 @@ public class Ingredient implements Concept {
 		return Objects.hash(this.name);
 	}
 
+	// make this printable
+	public String toString() {
+		return this.name + ": " + this.quantity + " " + this.unit;
+	}
+
 }

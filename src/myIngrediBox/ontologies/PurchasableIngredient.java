@@ -17,4 +17,9 @@ public class PurchasableIngredient extends Ingredient {
 		this.price = price;
 	}
 
+	// include price when printed
+	public String toString() {
+		return super.toString() + " -> " + this.price + "€";
+	}
+
 }
