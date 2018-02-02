@@ -39,16 +39,16 @@ public class GoShopping extends ContractNetInitiator {
 	}
 
 	@Override
-	protected Vector prepareCfps(ACLMessage cfp) {
-		Vector v = new Vector();
+	protected Vector prepareCfps(ACLMessage cfpTemplate) {
+		Vector marketsToCall = new Vector();
 
 		if (!this.buyerAgent.getRequiredIngredients().isEmpty()) {
-			cfp.setPerformative(ACLMessage.CFP);
-			cfp.setOntology(this.buyerAgent.getOntology().getName());
-			cfp.setLanguage(this.buyerAgent.getCodec().getName());
+			cfpTemplate.setPerformative(ACLMessage.CFP);
+			cfpTemplate.setOntology(this.buyerAgent.getOntology().getName());
+			cfpTemplate.setLanguage(this.buyerAgent.getCodec().getName());
 
 			RequestOffer requestOffer = null;
-			ACLMessage cfpX = null;
+			ACLMessage cfp = null;
 			Action a = null;
 
 			ArrayList<AID> markets = (ArrayList<AID>) this.getDataStore().get("Ingredient-Selling-Service");
@@ -58,13 +58,12 @@ public class GoShopping extends ContractNetInitiator {
 				requestOffer.setBuyer(this.buyerAgent.getAID());
 
 				a = new Action(market, requestOffer);
-
-				cfpX = (ACLMessage) cfp.clone();
-				cfpX.addReceiver(market);
+				cfp = (ACLMessage) cfpTemplate.clone();
+				cfp.addReceiver(market);
 				try {
-					this.myAgent.getContentManager().fillContent(cfpX, a);
-					System.out.println("Call for Proposal: " + cfpX);
-					v.add(cfpX);
+					this.myAgent.getContentManager().fillContent(cfp, a);
+
+					marketsToCall.add(cfp);
 				} catch (CodecException e) {
 					e.printStackTrace();
 				} catch (OntologyException e) {
@@ -73,8 +72,8 @@ public class GoShopping extends ContractNetInitiator {
 			}
 		}
 
-		System.out.println("IngrediBuyer:  CFP prepared v.size:" + v.size());
-		return v;
+		System.out.println("IngrediBuyer called " + marketsToCall.size() + " Market(s)");
+		return marketsToCall;
 	}
 
 	@Override
@@ -168,12 +167,6 @@ public class GoShopping extends ContractNetInitiator {
 	}
 
 	@Override
-	protected void handleRefuse(ACLMessage refuse) {
-		// TODO Auto-generated method stub
-		super.handleRefuse(refuse);
-	}
-
-	@Override
 	protected void handleInform(ACLMessage inform) {
 
 		// ingredients are bought at this stage
@@ -182,7 +175,18 @@ public class GoShopping extends ContractNetInitiator {
 			a = (Action) this.myAgent.getContentManager().extractContent(inform);
 			TradeIngredients tradeIngredients = (TradeIngredients) a.getAction();
 
-			// TODO now send them back to IBM
+			ArrayList<PurchasableIngredient> boughtIngredients = (ArrayList<PurchasableIngredient>) this.getDataStore()
+					.get("boughtIngredients");
+
+			if (boughtIngredients == null)
+				boughtIngredients = new ArrayList<PurchasableIngredient>();
+
+			boughtIngredients.addAll(tradeIngredients.getIngredients());
+
+			System.out.println("These ingredients are bought from " + inform.getSender().getLocalName() + ":"
+					+ tradeIngredients.getIngredients());
+
+			this.getDataStore().put("boughtIngredients", boughtIngredients);
 
 		} catch (UngroundedException e) {
 			// TODO Auto-generated catch block
