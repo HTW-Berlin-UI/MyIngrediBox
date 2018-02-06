@@ -54,7 +54,7 @@ public class ReceiveRequest extends AchieveREResponder
 				while (iterator.hasNext())
 				{
 					Ingredient ingredient = iterator.next();
-					System.out.print(ingredient.getName() + "\t");
+					System.out.print(ingredient.getQuantity() + " " + ingredient.getName() + "\t");
 				}
 				System.out.println("\n");
 				
