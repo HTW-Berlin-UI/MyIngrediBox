@@ -30,6 +30,7 @@ import myIngrediBox.shared.behaviours.RegisterServiceBehaviour;
 public class InventoryManagerAgent extends Agent {
 
 	private ArrayList<Ingredient> inventory;
+	private ArrayList<Ingredient> requestedIngredients;
 
 	private static final long serialVersionUID = 1L;
 
@@ -42,6 +43,7 @@ public class InventoryManagerAgent extends Agent {
 	 * ontology used for semantic parsing
 	 */
 	private Ontology ontology = IngrediBoxOntology.getInstance();
+
 
 	protected void setup() {
 		super.setup();
@@ -94,7 +96,7 @@ public class InventoryManagerAgent extends Agent {
 					if (ce instanceof Action) {
 						Action action = (Action) ce;
 						IngredientRequestAction ingredientRequestAction = (IngredientRequestAction) action.getAction();
-						
+						setRequestedIngredients(ingredientRequestAction.getRequiredIngredients());
 						Iterator<Ingredient> iterator = ingredientRequestAction.getRequiredIngredients().iterator();
 						
 						System.out.println("\nIM received request for: ");
@@ -145,6 +147,16 @@ public class InventoryManagerAgent extends Agent {
 
 	public void setInventory(ArrayList<Ingredient> inventory) {
 		this.inventory = inventory;
+	}
+
+	public ArrayList<Ingredient> getRequestedIngredients()
+	{
+		return requestedIngredients;
+	}
+
+	public void setRequestedIngredients(ArrayList<Ingredient> requestedIngredients)
+	{
+		this.requestedIngredients = requestedIngredients;
 	}
 
 }
