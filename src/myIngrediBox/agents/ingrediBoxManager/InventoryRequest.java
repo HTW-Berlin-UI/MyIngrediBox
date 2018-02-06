@@ -16,7 +16,7 @@ import jade.domain.FIPANames;
 import jade.lang.acl.ACLMessage;
 import jade.proto.AchieveREInitiator;
 import myIngrediBox.ontologies.Ingredient;
-import myIngrediBox.ontologies.RequestIngredients;
+import myIngrediBox.ontologies.IngredientRequestAction;
 
 
 public class InventoryRequest extends AchieveREInitiator
@@ -46,14 +46,14 @@ public class InventoryRequest extends AchieveREInitiator
 		if (!this.requestedIngredientList.isEmpty())
 		{
 			// Request the ingredients from the recipe at InventoryManager
-			RequestIngredients requestIngredients = new RequestIngredients();
-			requestIngredients.setRequiredIngredients(requestedIngredientList);
-			requestIngredients.setBuyer(this.getAgent().getAID());
+			IngredientRequestAction ingredientRequestAction = new IngredientRequestAction();
+			ingredientRequestAction.setRequiredIngredients(requestedIngredientList);
+			ingredientRequestAction.setBuyer(this.getAgent().getAID());
 
 			// find InventoryManager(s)
 			ArrayList<AID> inventoryManagers = (ArrayList<AID>) this.getDataStore().get("Inventory-Managing-Service");
 
-			Action requestIngredientsAction = new Action(inventoryManagers.get(0), requestIngredients);
+			Action requestIngredientsAction = new Action(inventoryManagers.get(0), ingredientRequestAction);
 
 			request.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
 			request.setOntology(ingrediBoxManagerAgent.getOntology().getName());

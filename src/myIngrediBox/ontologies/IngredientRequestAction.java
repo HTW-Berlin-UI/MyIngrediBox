@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import jade.content.AgentAction;
 import jade.core.AID;
 
-public class RequestIngredients implements AgentAction {
+public class IngredientRequestAction implements AgentAction {
 
 	private static final long serialVersionUID = 1L;
 
