@@ -80,7 +80,7 @@ public class InventoryRequest extends AchieveREInitiator
 	@Override
 	protected void handleAgree(ACLMessage agree)
 	{
-		System.out.println("\nAgreed: " + agree);
+		//System.out.println("\nAgreed: " + agree);
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class InventoryRequest extends AchieveREInitiator
 	@Override
 	protected void handleInform(ACLMessage inform)
 	{
-		System.out.println("\nSome Inform: " + inform);
+		//System.out.println("\nSome Inform: " + inform);
 	}
 
 	/**
