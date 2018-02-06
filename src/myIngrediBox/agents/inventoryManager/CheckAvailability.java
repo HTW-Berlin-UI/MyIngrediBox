@@ -6,6 +6,7 @@ import java.util.Iterator;
 import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
 import myIngrediBox.ontologies.Ingredient;
+import myIngrediBox.shared.behaviours.PrintIngredientList;
 
 public class CheckAvailability extends OneShotBehaviour
 {
@@ -14,6 +15,7 @@ public class CheckAvailability extends OneShotBehaviour
 	private InventoryManagerAgent inventoryManagerAgent;
 	private ArrayList<Ingredient> inventory;
 	private ArrayList<Ingredient> requestedIngredients;
+	private ArrayList<Ingredient> ingredientBasket = new ArrayList<>();
 
 	public CheckAvailability(Agent a)
 	{
@@ -26,21 +28,58 @@ public class CheckAvailability extends OneShotBehaviour
 	{
 		this.inventory = inventoryManagerAgent.getInventory();
 		this.requestedIngredients = inventoryManagerAgent.getRequestedIngredients();
-		
-		Iterator<Ingredient> ingredientIterator = inventory.iterator();
+
 		Iterator<Ingredient> requestIterator = requestedIngredients.iterator();
-		
+
+		// check availability
 		while (requestIterator.hasNext())
-		{	
+		{
 			Ingredient requestIngredient = (Ingredient) requestIterator.next();
-			boolean b = inventory.retainAll(requestedIngredients);
-			if(inventory.contains(requestIngredient)) {
-				System.out.println("Yes, I have " + requestIngredient.getName());
-			}
-			else {
+
+			if (inventory.contains(requestIngredient))
+			{
+				System.out.println("Yes, I have " + requestIngredient.getName() + "\t Quantity: "
+						+ inventory.get(inventory.indexOf(requestIngredient)).getQuantity());
+
+				int indexI = inventory.indexOf(requestIngredient);
+				int indexR = requestedIngredients.indexOf(requestIngredient);
+
+				Ingredient inventoryIngredient = inventory.get(indexI);
+
+				boolean haveSameUnit = inventoryIngredient.getUnit().equals(requestIngredient.getUnit());
+
+				// set remaining quantity of request and inventory ingredient
+				if (haveSameUnit)
+				{
+					if (inventoryIngredient.getQuantity() > requestIngredient.getQuantity())
+					{
+						ingredientBasket.add(requestIngredient);
+						inventory.get(indexI)
+								.setQuantity(inventoryIngredient.getQuantity() - requestIngredient.getQuantity());
+						requestIterator.remove();
+					} else if (inventoryIngredient.getQuantity() == requestIngredient.getQuantity())
+					{
+						ingredientBasket.add(requestIngredient);
+						inventory.remove(indexI);
+						requestIterator.remove();
+					} else if (inventoryIngredient.getQuantity() < requestIngredient.getQuantity())
+					{
+						requestIngredient
+								.setQuantity(requestIngredient.getQuantity() - inventoryIngredient.getQuantity());
+						inventory.remove(indexI);
+						ingredientBasket.add(requestIngredient);
+					}
+				}
+			} else
+			{
 				System.out.println("No, I don't have " + requestIngredient.getName());
+				// requestIngredient-quantity remains the same
 			}
 		}
+
+		printList(inventory, "Updated Inventory");
+		printList(requestedIngredients, "Left Request (left to buy)");
+		printList(ingredientBasket, "Ingredient Basket (to send to IBM)");
 	}
 
 	@Override
@@ -50,6 +89,20 @@ public class CheckAvailability extends OneShotBehaviour
 		inventoryManagerAgent = null;
 		inventory = null;
 		requestedIngredients = null;
+		ingredientBasket = null;
+	}
+
+	public void printList(ArrayList<Ingredient> list, String listname)
+	{
+		System.out.println("\n" + listname + ":");
+
+		for (Ingredient ingredient : list)
+		{
+			System.out.print(ingredient.getName() + "\t");
+			System.out.print(ingredient.getQuantity() + "\t");
+			System.out.println(ingredient.getUnit());
+		}
+
 	}
 
 }
