@@ -40,7 +40,7 @@ public class IngrediBoxManagerAgent extends Agent
 		this.recipe = new ArrayList<Ingredient>();
 
 		// Load Recipe
-		ReadFromFile loadRecipe = new ReadFromFile("assets/recipes/Eierkuchen.json");
+		ReadFromFile loadRecipe = new ReadFromFile("assets/recipes/EierkuchenSpezial.json");
 		ParseRecipe parseRecipe = new ParseRecipe();
 		PrintRecipeIngredientList printRecipeIngredientBehaviour = new PrintRecipeIngredientList(this.recipe);
 
