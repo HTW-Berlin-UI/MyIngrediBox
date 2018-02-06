@@ -1,6 +1,7 @@
 package myIngrediBox.agents.inventoryManager;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
@@ -24,14 +25,33 @@ public class CheckAvailability extends OneShotBehaviour
 	@Override
 	public void action()
 	{
+		Iterator<Ingredient> ingredientIterator = inventory.iterator();
+		Iterator<Ingredient> requestIterator =requestedIngredients.iterator();
 		
+		while (requestIterator.hasNext())
+		{
+			Ingredient requestIngredient = (Ingredient) requestIterator.next();
+			while (ingredientIterator.hasNext())
+			{
+				Ingredient inventoryIngredient = (Ingredient) ingredientIterator.next();
+				
+				if(inventory.contains(requestIngredient)) {
+					System.out.println("Yes, I have " + requestIngredient.getName());
+				}
+				else {
+					System.out.println("No, I don't have " + requestIngredient.getName());
+				}
+			}
+		}
 	}
 
 	@Override
 	public void reset()
 	{
-		// TODO Auto-generated method stub
 		super.reset();
+		inventoryManagerAgent = null;
+		inventory = null;
+		requestedIngredients = null;
 	}
 
 }
