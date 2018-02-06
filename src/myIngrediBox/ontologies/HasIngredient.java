@@ -1,5 +1,7 @@
 package myIngrediBox.ontologies;
 
+import java.util.ArrayList;
+
 import jade.content.Predicate;
 import jade.core.AID;
 

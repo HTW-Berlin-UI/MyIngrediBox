@@ -30,7 +30,7 @@ public class PrintRecipeIngredientList extends OneShotBehaviour
 
 		System.out.println("\nRecipe:");
 		while (iterator.hasNext()) {
-			Ingredient ingredient = iterator.next();	//!!ClassCastExeption
+			Ingredient ingredient = iterator.next();
 			System.out.print(ingredient.getName() + "\t");
 			System.out.print(ingredient.getQuantity() + "\t");
 			System.out.println(ingredient.getUnit());

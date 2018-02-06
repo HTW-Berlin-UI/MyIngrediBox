@@ -1,11 +1,14 @@
 package myIngrediBox.agents.inventoryManager;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
+import jade.content.AgentAction;
 import jade.content.ContentElement;
 import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
 import jade.content.onto.Ontology;
+import jade.content.onto.basic.Action;
 import jade.core.Agent;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.FIPANames;
@@ -18,6 +21,7 @@ import jade.proto.AchieveREResponder;
 import myIngrediBox.ontologies.HasIngredient;
 import myIngrediBox.ontologies.IngrediBoxOntology;
 import myIngrediBox.ontologies.Ingredient;
+import myIngrediBox.ontologies.IngredientRequestAction;
 import myIngrediBox.shared.behaviours.DeregisterServiceBehaviour;
 import myIngrediBox.shared.behaviours.PrintIngredientList;
 import myIngrediBox.shared.behaviours.ReadFromFile;
@@ -77,16 +81,28 @@ public class InventoryManagerAgent extends Agent {
 
 			@Override
 			protected ACLMessage handleRequest(ACLMessage request) throws NotUnderstoodException, RefuseException {
-				System.out.println("\nRequest message content: " + request.getContent());
 				ACLMessage response = request.createReply();
 				try // valid dateformat?
 				{
-
 					ContentElement ce = null;
+					
+					//ce will be instance of Action
 					ce = getContentManager().extractContent(request);
-					if (ce instanceof HasIngredient) {
-						HasIngredient hasIngredient = (HasIngredient) ce; // now do something
-						System.out.println("\nich habe anfrage für: " + hasIngredient.getIngredient().getName());
+
+					//getContentObject() could receive Java Object, but not recommended cause not FIPA
+					//and if Agent not on Java platform
+					if (ce instanceof Action) {
+						Action action = (Action) ce;
+						IngredientRequestAction ingredientRequestAction = (IngredientRequestAction) action.getAction();
+						
+						Iterator<Ingredient> iterator = ingredientRequestAction.getRequiredIngredients().iterator();
+						
+						System.out.println("\nIM received request for: ");
+						while (iterator.hasNext())
+						{
+							Ingredient ingredient = iterator.next();
+							System.out.print(ingredient.getName() + "\t");
+						}								
 					}
 
 				} catch (Exception e) {

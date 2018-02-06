@@ -12,16 +12,15 @@ import jade.lang.acl.ACLMessage;
 import myIngrediBox.ontologies.IngrediBoxOntology;
 import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.shared.behaviours.DFQueryBehaviour;
-import myIngrediBox.shared.behaviours.PrintIngredientList;
 import myIngrediBox.shared.behaviours.PrintRecipeIngredientList;
 import myIngrediBox.shared.behaviours.ReadFromFile;
 
-public class IngrediBoxManagerAgent extends Agent {
+public class IngrediBoxManagerAgent extends Agent
+{
 
 	private static final long serialVersionUID = 1L;
-	
-	private ArrayList<Ingredient> recipe;
 
+	private ArrayList<Ingredient> recipe;
 
 	/**
 	 * message language FIPA-SL
@@ -34,31 +33,29 @@ public class IngrediBoxManagerAgent extends Agent {
 	private Ontology ontology = IngrediBoxOntology.getInstance();
 
 	@Override
-	protected void setup() {
+	protected void setup()
+	{
 		super.setup();
-		
+
 		this.recipe = new ArrayList<Ingredient>();
 
-		
 		// Load Recipe
 		ReadFromFile loadRecipe = new ReadFromFile("assets/recipes/Eierkuchen.json");
-		ParseRecipe parseRecipe = new ParseRecipe();	
+		ParseRecipe parseRecipe = new ParseRecipe();
 		PrintRecipeIngredientList printRecipeIngredientBehaviour = new PrintRecipeIngredientList(this.recipe);
 
 		SequentialBehaviour manageRecipe = new SequentialBehaviour();
 		loadRecipe.setDataStore(manageRecipe.getDataStore());
 		parseRecipe.setDataStore(manageRecipe.getDataStore());
-		
+
 		manageRecipe.addSubBehaviour(loadRecipe);
 		manageRecipe.addSubBehaviour(parseRecipe);
 		manageRecipe.addSubBehaviour(printRecipeIngredientBehaviour);
-		
+
 		this.addBehaviour(manageRecipe);
 
 		this.getContentManager().registerLanguage(codec);
 		this.getContentManager().registerOntology(ontology);
-		
-	
 
 		DFQueryBehaviour dfQueryBehaviour = new DFQueryBehaviour(this, "Inventory-Managing-Service");
 
@@ -67,17 +64,24 @@ public class IngrediBoxManagerAgent extends Agent {
 
 			private static final long serialVersionUID = 1L;
 
-			protected void onWake() {
+			protected void onWake()
+			{
 				this.myAgent.addBehaviour(dfQueryBehaviour);
 
 				// register adapted AchieveREINitiator Behaviour
 				ACLMessage m = new ACLMessage(ACLMessage.REQUEST);
 				m.setContent("Hi, this is an InventoryRequest");
 
+				Ingredient ingredientToRequest = new Ingredient();
+				ingredientToRequest = getRecipe().get(0);
 				InventoryRequest inventoryRequest = new InventoryRequest(myAgent, m);
 				inventoryRequest.setDataStore(dfQueryBehaviour.getDataStore());
-
 				this.myAgent.addBehaviour(inventoryRequest);
+
+				// TODO send Ingredis as ArrayList!! (like in RequestOffer Class and GoShoppin
+				// Class)
+				// oder inventoryRequest.setIngredientToRequest(itreq);...bauen
+
 			}
 
 		});
@@ -90,14 +94,35 @@ public class IngrediBoxManagerAgent extends Agent {
 	{
 		super.takeDown();
 	}
-	
-	public void setRecipe(ArrayList<Ingredient> recipe) {
+
+	public void setRecipe(ArrayList<Ingredient> recipe)
+	{
 		this.recipe = recipe;
 	}
 
 	public ArrayList<Ingredient> getRecipe()
 	{
 		return recipe;
+	}
+
+	public Ontology getOntology()
+	{
+		return ontology;
+	}
+
+	public void setOntology(Ontology ontology)
+	{
+		this.ontology = ontology;
+	}
+
+	public Codec getCodec()
+	{
+		return codec;
+	}
+
+	public void setCodec(Codec codec)
+	{
+		this.codec = codec;
 	}
 
 }
