@@ -18,29 +18,27 @@ public class CheckAvailability extends OneShotBehaviour
 	public CheckAvailability(Agent a)
 	{
 		this.inventoryManagerAgent = (InventoryManagerAgent) a;
-		this.inventory = inventoryManagerAgent.getInventory();
-		this.requestedIngredients = inventoryManagerAgent.getRequestedIngredients();
+
 	}
 
 	@Override
 	public void action()
 	{
+		this.inventory = inventoryManagerAgent.getInventory();
+		this.requestedIngredients = inventoryManagerAgent.getRequestedIngredients();
+		
 		Iterator<Ingredient> ingredientIterator = inventory.iterator();
-		Iterator<Ingredient> requestIterator =requestedIngredients.iterator();
+		Iterator<Ingredient> requestIterator = requestedIngredients.iterator();
 		
 		while (requestIterator.hasNext())
-		{
+		{	
 			Ingredient requestIngredient = (Ingredient) requestIterator.next();
-			while (ingredientIterator.hasNext())
-			{
-				Ingredient inventoryIngredient = (Ingredient) ingredientIterator.next();
-				
-				if(inventory.contains(requestIngredient)) {
-					System.out.println("Yes, I have " + requestIngredient.getName());
-				}
-				else {
-					System.out.println("No, I don't have " + requestIngredient.getName());
-				}
+			boolean b = inventory.retainAll(requestedIngredients);
+			if(inventory.contains(requestIngredient)) {
+				System.out.println("Yes, I have " + requestIngredient.getName());
+			}
+			else {
+				System.out.println("No, I don't have " + requestIngredient.getName());
 			}
 		}
 	}

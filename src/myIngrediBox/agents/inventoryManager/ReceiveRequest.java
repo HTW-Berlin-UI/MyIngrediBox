@@ -21,11 +21,12 @@ public class ReceiveRequest extends AchieveREResponder
 	//receive AND responde with sending ingredients ??
 
 	private static final long serialVersionUID = 1L;
+	private InventoryManagerAgent inventoryManagerAgent;
 
 	public ReceiveRequest(Agent a, MessageTemplate mt)
 	{
 		super(a, mt);
-		// TODO Auto-generated constructor stub
+		this.inventoryManagerAgent = (InventoryManagerAgent) a;
 	}
 	
 	@Override
@@ -37,7 +38,7 @@ public class ReceiveRequest extends AchieveREResponder
 			ContentElement ce = null;
 
 			// ce will be instance of Action
-			ce = this.myAgent.getContentManager().extractContent(request);
+			ce = inventoryManagerAgent.getContentManager().extractContent(request);
 
 			// getContentObject() could receive Java Object, but not recommended cause not
 			// FIPA
@@ -46,7 +47,7 @@ public class ReceiveRequest extends AchieveREResponder
 			{
 				Action action = (Action) ce;
 				IngredientRequestAction ingredientRequestAction = (IngredientRequestAction) action.getAction();
-				//setRequestedIngredients(ingredientRequestAction.getRequiredIngredients());
+				inventoryManagerAgent.setRequestedIngredients(ingredientRequestAction.getRequiredIngredients());
 				Iterator<Ingredient> iterator = ingredientRequestAction.getRequiredIngredients().iterator();
 
 				System.out.println("\nIM received request for: ");
@@ -56,6 +57,9 @@ public class ReceiveRequest extends AchieveREResponder
 					System.out.print(ingredient.getName() + "\t");
 				}
 				System.out.println("\n");
+				
+				CheckAvailability checkAvailability = new CheckAvailability(myAgent);
+				this.myAgent.addBehaviour(checkAvailability);
 			}
 
 		} catch (Exception e)
