@@ -21,7 +21,7 @@ import jade.proto.AchieveREResponder;
 import myIngrediBox.ontologies.HasIngredient;
 import myIngrediBox.ontologies.IngrediBoxOntology;
 import myIngrediBox.ontologies.Ingredient;
-import myIngrediBox.ontologies.IngredientRequestAction;
+import myIngrediBox.ontologies.IngredientSendingAction;
 import myIngrediBox.ontologies.Unit;
 import myIngrediBox.shared.behaviours.DeregisterServiceBehaviour;
 import myIngrediBox.shared.behaviours.PrintIngredientList;
@@ -125,6 +125,26 @@ public class InventoryManagerAgent extends Agent
 	public void setAvailableRequestedIngredients(ArrayList<Ingredient> availableRequestedIngredients)
 	{
 		this.availableRequestedIngredients = availableRequestedIngredients;
+	}
+
+	public Codec getCodec()
+	{
+		return codec;
+	}
+
+	public void setCodec(Codec codec)
+	{
+		this.codec = codec;
+	}
+
+	public Ontology getOntology()
+	{
+		return ontology;
+	}
+
+	public void setOntology(Ontology ontology)
+	{
+		this.ontology = ontology;
 	}
 
 }

@@ -1,6 +1,7 @@
 package myIngrediBox.agents.ingrediBoxManager;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Vector;
 
 import jade.content.ContentElement;
@@ -13,11 +14,12 @@ import jade.content.onto.basic.Action;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.FIPANames;
+import jade.domain.FIPAAgentManagement.NotUnderstoodException;
 import jade.lang.acl.ACLMessage;
 import jade.proto.AchieveREInitiator;
+import myIngrediBox.agents.inventoryManager.CheckAvailability;
 import myIngrediBox.ontologies.Ingredient;
-import myIngrediBox.ontologies.IngredientRequestAction;
-
+import myIngrediBox.ontologies.IngredientSendingAction;
 
 public class InventoryRequest extends AchieveREInitiator
 {
@@ -46,9 +48,9 @@ public class InventoryRequest extends AchieveREInitiator
 		if (!this.requestedIngredientList.isEmpty())
 		{
 			// Request the ingredients from the recipe at InventoryManager
-			IngredientRequestAction ingredientRequestAction = new IngredientRequestAction();
-			ingredientRequestAction.setRequiredIngredients(requestedIngredientList);
-			ingredientRequestAction.setBuyer(this.getAgent().getAID());
+			IngredientSendingAction ingredientRequestAction = new IngredientSendingAction();
+			ingredientRequestAction.setIngredients(requestedIngredientList);
+			ingredientRequestAction.setAgent(this.getAgent().getAID());
 
 			// find InventoryManager(s)
 			ArrayList<AID> inventoryManagers = (ArrayList<AID>) this.getDataStore().get("Inventory-Managing-Service");
@@ -80,7 +82,7 @@ public class InventoryRequest extends AchieveREInitiator
 	@Override
 	protected void handleAgree(ACLMessage agree)
 	{
-		//System.out.println("\nAgreed: " + agree);
+		// System.out.println("\nAgreed: " + agree);
 	}
 
 	/**
@@ -90,7 +92,49 @@ public class InventoryRequest extends AchieveREInitiator
 	@Override
 	protected void handleInform(ACLMessage inform)
 	{
-		//System.out.println("\nSome Inform: " + inform);
+		System.out.println("\nIBM received Inform from IM: " + inform);
+
+//		ContentElement ce = null;
+//
+//		// ce will be instance of Action
+//		try
+//		{
+//			
+//			ce = ingrediBoxManagerAgent.getContentManager().extractContent(inform);
+//
+//			// and if Agent not on Java platform
+//			if (ce instanceof Action)
+//			{
+//				Action action = (Action) ce;
+//				IngredientSendingAction availableIngredientReceivingAction = (IngredientSendingAction) action
+//						.getAction();
+//				//ReduceRecipe
+//				ingrediBoxManagerAgent.setShoppingList(availableIngredientReceivingAction.getIngredients());
+//				Iterator<Ingredient> iterator = availableIngredientReceivingAction.getIngredients().iterator();
+//
+//				System.out.println("\nIBM received available ingredients: ");
+//				while (iterator.hasNext())
+//				{
+//					Ingredient ingredient = iterator.next();
+//					System.out.print(ingredient.getQuantity() + " " + ingredient.getName() + "\t");
+//				}
+//				System.out.println("\n");
+//
+//			}
+//		} catch (UngroundedException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (CodecException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (OntologyException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+
 	}
 
 	/**
@@ -99,6 +143,8 @@ public class InventoryRequest extends AchieveREInitiator
 	@Override
 	protected void handleRefuse(ACLMessage refuse)
 	{
+		System.out.println(refuse);
+
 		ContentElement ce = null;
 		try
 		{

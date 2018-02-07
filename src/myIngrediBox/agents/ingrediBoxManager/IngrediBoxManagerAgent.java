@@ -21,6 +21,9 @@ public class IngrediBoxManagerAgent extends Agent
 	private static final long serialVersionUID = 1L;
 
 	private ArrayList<Ingredient> recipe;
+	ArrayList<Ingredient> shoppingList;
+
+
 
 	/**
 	 * message language FIPA-SL
@@ -60,7 +63,7 @@ public class IngrediBoxManagerAgent extends Agent
 		DFQueryBehaviour dfQueryBehaviour = new DFQueryBehaviour(this, "Inventory-Managing-Service");
 
 		// for testing normal way would be user-interaction or another system
-		this.addBehaviour(new WakerBehaviour(this, 250) {
+		this.addBehaviour(new WakerBehaviour(this, 150) {
 
 			private static final long serialVersionUID = 1L;
 
@@ -77,10 +80,6 @@ public class IngrediBoxManagerAgent extends Agent
 				InventoryRequest inventoryRequest = new InventoryRequest(myAgent, m);
 				inventoryRequest.setDataStore(dfQueryBehaviour.getDataStore());
 				this.myAgent.addBehaviour(inventoryRequest);
-
-				// TODO send Ingredis as ArrayList!! (like in RequestOffer Class and GoShoppin
-				// Class)
-				// oder inventoryRequest.setIngredientToRequest(itreq);...bauen
 
 			}
 
@@ -123,6 +122,16 @@ public class IngrediBoxManagerAgent extends Agent
 	public void setCodec(Codec codec)
 	{
 		this.codec = codec;
+	}
+	
+	public ArrayList<Ingredient> getShoppingList()
+	{
+		return shoppingList;
+	}
+
+	public void setShoppingList(ArrayList<Ingredient> shoppingList)
+	{
+		this.shoppingList = shoppingList;
 	}
 
 }

@@ -76,7 +76,12 @@ public class CheckAvailability extends OneShotBehaviour
 				// requestIngredient-quantity remains the same
 			}
 		}
-
+		
+		//Update IM's inventory
+		inventoryManagerAgent.setInventory(this.inventory);
+		//Set ingredients to pass to IBM
+		inventoryManagerAgent.setAvailableRequestedIngredients(ingredientBasket);
+	
 		printList(inventory, "Updated Inventory");
 		printList(requestedIngredients, "Left Request (left to buy)");
 		printList(ingredientBasket, "Ingredient Basket (to send to IBM)");
