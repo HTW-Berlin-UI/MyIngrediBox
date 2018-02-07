@@ -76,6 +76,10 @@ public class ReceiveRequest extends AchieveREResponder
 	protected ACLMessage prepareResultNotification(ACLMessage request, ACLMessage response)
 			throws FailureException
 	{
+		
+		if(!inventoryManagerAgent.getAvailableRequestedIngredients().isEmpty()) {
+			
+		}
 		if (request.getContent() != null)
 		{
 			try

@@ -33,6 +33,7 @@ public class InventoryManagerAgent extends Agent
 
 	private ArrayList<Ingredient> inventory;
 	private ArrayList<Ingredient> requestedIngredients;
+	private ArrayList<Ingredient> availableRequestedIngredients;
 
 	private static final long serialVersionUID = 1L;
 
@@ -94,6 +95,7 @@ public class InventoryManagerAgent extends Agent
 		super.takeDown();
 		this.addBehaviour(new DeregisterServiceBehaviour(this));
 	}
+	
 
 	public ArrayList<Ingredient> getInventory()
 	{
@@ -113,6 +115,16 @@ public class InventoryManagerAgent extends Agent
 	public void setRequestedIngredients(ArrayList<Ingredient> requestedIngredients)
 	{
 		this.requestedIngredients = requestedIngredients;
+	}
+
+	public ArrayList<Ingredient> getAvailableRequestedIngredients()
+	{
+		return availableRequestedIngredients;
+	}
+
+	public void setAvailableRequestedIngredients(ArrayList<Ingredient> availableRequestedIngredients)
+	{
+		this.availableRequestedIngredients = availableRequestedIngredients;
 	}
 
 }
