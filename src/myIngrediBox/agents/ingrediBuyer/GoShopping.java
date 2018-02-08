@@ -10,10 +10,14 @@ import jade.content.onto.UngroundedException;
 import jade.content.onto.basic.Action;
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.DataStore;
+import jade.domain.FIPAAgentManagement.FailureException;
 import jade.lang.acl.ACLMessage;
+import jade.proto.AchieveREResponder;
 import jade.proto.ContractNetInitiator;
 import myIngrediBox.ontologies.PurchasableIngredient;
 import myIngrediBox.ontologies.RequestOffer;
+import myIngrediBox.ontologies.SendPurchase;
 import myIngrediBox.ontologies.TradeIngredients;
 
 public class GoShopping extends ContractNetInitiator {
@@ -203,9 +207,43 @@ public class GoShopping extends ContractNetInitiator {
 
 	@Override
 	protected void handleAllResultNotifications(Vector resultNotifications) {
-		// at this stage the trades have finished
+		// at this stage the trades have finished.
+		// override behaviour of parent AchieveREResponder method ->
+		// prepareResultNotification
 
-		System.out.println("alle results da");
+		DataStore ds = getDataStore();
+		AchieveREResponder fsm = (AchieveREResponder) getParent();
+		ACLMessage request = (ACLMessage) ds.get(fsm.REQUEST_KEY);
+		ACLMessage response = (ACLMessage) ds.get(fsm.RESPONSE_KEY);
+
+		try {
+
+			if (response == null) {
+				response = request.createReply();
+			}
+			response.setPerformative(ACLMessage.INFORM);
+
+			ArrayList<PurchasableIngredient> boughtIngredients = (ArrayList<PurchasableIngredient>) this.getDataStore()
+					.get("boughtIngredients");
+
+			SendPurchase sendPurchase = new SendPurchase();
+			sendPurchase.setBoughtIngredients(boughtIngredients);
+
+			Action responseAction = new Action(this.getAgent().getAID(), sendPurchase);
+
+			this.myAgent.getContentManager().fillContent(response, responseAction);
+
+		} catch (Exception e) {
+			// setPerformativ = Failure, setContent error-message
+			try {
+				throw new FailureException(response);
+			} catch (FailureException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+
+		ds.put(fsm.RESULT_NOTIFICATION_KEY, response);
 
 		super.handleAllResultNotifications(resultNotifications);
 	}

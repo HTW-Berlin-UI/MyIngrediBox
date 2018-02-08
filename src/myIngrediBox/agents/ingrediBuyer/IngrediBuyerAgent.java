@@ -6,7 +6,6 @@ import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
 import jade.content.onto.Ontology;
 import jade.core.Agent;
-import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.core.behaviours.WakerBehaviour;
 import jade.domain.FIPANames;
@@ -97,30 +96,20 @@ public class IngrediBuyerAgent extends Agent {
 		findMarketsThanBuy.addSubBehaviour(findMarkets);
 		findMarkets.setDataStore(findMarketsThanBuy.getDataStore());
 
+		// start trading with markets to find best buying options
+		ACLMessage m = new ACLMessage(ACLMessage.CFP);
+		m.setProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET);
+		GoShopping goShopping = new GoShopping(this, m);
+		goShopping.setDataStore(findMarketsThanBuy.getDataStore());
+
 		// await buyer request
 		MessageTemplate mt = AchieveREResponder.createMessageTemplate(FIPANames.InteractionProtocol.FIPA_REQUEST);
 		mt = MessageTemplate.and(MessageTemplate.MatchConversationId("buyer-request"),
 				MessageTemplate.MatchProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST));
 		ServeBuyerRequest serveBuyerRequest = new ServeBuyerRequest(this, mt, findMarketsThanBuy.getDataStore());
+		serveBuyerRequest.registerPrepareResultNotification(goShopping);
 
-		this.addBehaviour(serveBuyerRequest);
-
-		// start trading with markets to find best buying options
-		ACLMessage m = new ACLMessage(ACLMessage.CFP);
-		m.setProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET);
-		GoShopping goShopping = new GoShopping(this, m);
-		findMarketsThanBuy.addSubBehaviour(goShopping);
-		goShopping.setDataStore(findMarketsThanBuy.getDataStore());
-
-		findMarketsThanBuy.addSubBehaviour(new OneShotBehaviour() {
-
-			@Override
-			public void action() {
-				System.out.println("now");
-
-			}
-
-		});
+		findMarketsThanBuy.addSubBehaviour(serveBuyerRequest);
 
 		// finally add trading behaviour to agent
 		this.addBehaviour(findMarketsThanBuy);

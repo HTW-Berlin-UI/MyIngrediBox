@@ -65,7 +65,7 @@ public class IngrediBoxManagerAgent extends Agent {
 		findBuyerThanBuy.addSubBehaviour(findBuyer);
 		findBuyerThanBuy.addSubBehaviour(buy);
 
-		this.addBehaviour(new WakerBehaviour(this, 20000) {
+		this.addBehaviour(new WakerBehaviour(this, 22000) {
 
 			protected void onWake() {
 				this.getAgent().addBehaviour(findBuyerThanBuy);
@@ -83,7 +83,7 @@ public class IngrediBoxManagerAgent extends Agent {
 		DFQueryBehaviour dfQueryBehaviour = new DFQueryBehaviour(this, "Inventory-Managing-Service");
 
 		// for testing normal way would be user-interaction or another system
-		this.addBehaviour(new WakerBehaviour(this, 15000) {
+		this.addBehaviour(new WakerBehaviour(this, 20000) {
 
 			private static final long serialVersionUID = 1L;
 
