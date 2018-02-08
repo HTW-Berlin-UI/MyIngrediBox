@@ -1,11 +1,16 @@
 package myIngrediBox.agents.inventoryManager;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import jade.content.ContentElement;
+import jade.content.lang.Codec.CodecException;
+import jade.content.onto.OntologyException;
 import jade.content.onto.basic.Action;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.DataStore;
+import jade.domain.FIPANames;
 import jade.domain.FIPAAgentManagement.FailureException;
 import jade.domain.FIPAAgentManagement.NotUnderstoodException;
 import jade.domain.FIPAAgentManagement.RefuseException;
@@ -13,22 +18,22 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.AchieveREResponder;
 import myIngrediBox.ontologies.Ingredient;
-import myIngrediBox.ontologies.IngredientRequestAction;
+import myIngrediBox.ontologies.IngredientSendingAction;
 
-public class ReceiveRequest extends AchieveREResponder
+public class RequestResponse extends AchieveREResponder
 {
-	
-	//receive AND responde with sending ingredients ??
+
+	// receive AND responde with sending ingredients ??
 
 	private static final long serialVersionUID = 1L;
 	private InventoryManagerAgent inventoryManagerAgent;
 
-	public ReceiveRequest(Agent a, MessageTemplate mt)
+	public RequestResponse(Agent a, MessageTemplate mt)
 	{
 		super(a, mt);
 		this.inventoryManagerAgent = (InventoryManagerAgent) a;
 	}
-	
+
 	@Override
 	protected ACLMessage handleRequest(ACLMessage request) throws NotUnderstoodException, RefuseException
 	{
@@ -46,9 +51,9 @@ public class ReceiveRequest extends AchieveREResponder
 			if (ce instanceof Action)
 			{
 				Action action = (Action) ce;
-				IngredientRequestAction ingredientRequestAction = (IngredientRequestAction) action.getAction();
-				inventoryManagerAgent.setRequestedIngredients(ingredientRequestAction.getRequiredIngredients());
-				Iterator<Ingredient> iterator = ingredientRequestAction.getRequiredIngredients().iterator();
+				IngredientSendingAction ingredientRequestAction = (IngredientSendingAction) action.getAction();
+				inventoryManagerAgent.setRequestedIngredients(ingredientRequestAction.getIngredients());
+				Iterator<Ingredient> iterator = ingredientRequestAction.getIngredients().iterator();
 
 				System.out.println("\nIM received request for: ");
 				while (iterator.hasNext())
@@ -57,7 +62,7 @@ public class ReceiveRequest extends AchieveREResponder
 					System.out.print(ingredient.getQuantity() + " " + ingredient.getName() + "\t");
 				}
 				System.out.println("\n");
-				
+
 				CheckAvailability checkAvailability = new CheckAvailability(myAgent);
 				this.myAgent.addBehaviour(checkAvailability);
 			}
@@ -73,22 +78,42 @@ public class ReceiveRequest extends AchieveREResponder
 	}
 
 	@Override
-	protected ACLMessage prepareResultNotification(ACLMessage request, ACLMessage response)
-			throws FailureException
+	protected ACLMessage prepareResultNotification(ACLMessage request, ACLMessage response) throws FailureException
 	{
+		response = request.createReply();
+		//for testing refuse-case
+//		inventoryManagerAgent.getAvailableRequestedIngredients().clear();
 		if (request.getContent() != null)
 		{
-			try
+			if (!inventoryManagerAgent.getAvailableRequestedIngredients().isEmpty())
 			{
+				
+				// Send available ingredients to IBM
+				IngredientSendingAction sendAvailableIngredientsAction = new IngredientSendingAction();
+				sendAvailableIngredientsAction
+						.setIngredients(inventoryManagerAgent.getAvailableRequestedIngredients());
+				sendAvailableIngredientsAction.setAgent(inventoryManagerAgent.getAID());
+
 				response.setPerformative(ACLMessage.INFORM);
-				response.setContent("IngredientRequest received...");
-			} catch (Exception e)
-			// setPerformativ = Failure, setContent error-message
-			{
-				throw new FailureException(response);
+				
+				try
+				{
+					Action responseAction = new Action(this.getAgent().getAID(), sendAvailableIngredientsAction);
+					this.getAgent().getContentManager().fillContent(response, responseAction);
+				} catch (CodecException | OntologyException e)
+				{
+					e.printStackTrace();
+				}
 			}
+			
+			else {
+				response.setPerformative(ACLMessage.REFUSE);
+				response.setContent("Non of the requested ingredients is available :(");	
+			}
+
 		}
 		return response;
 	}
+	
 
 }

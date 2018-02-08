@@ -21,6 +21,9 @@ public class IngrediBoxManagerAgent extends Agent {
 	private static final long serialVersionUID = 1L;
 
 	private ArrayList<Ingredient> recipe;
+	private ArrayList<Ingredient> shoppingList = new ArrayList<>();
+	private ArrayList<Ingredient> availableIngredientList = new ArrayList<>();
+
 
 	/**
 	 * message language FIPA-SL
@@ -73,7 +76,11 @@ public class IngrediBoxManagerAgent extends Agent {
 		manageRecipe.addSubBehaviour(findInventoryThanCheckAvailability);
 
 		// IMB-IM-Communication end
-
+		
+		// Create shopping list 
+		CreateShoppingList createShoppingList = new CreateShoppingList(this);
+		manageRecipe.addSubBehaviour(createShoppingList);
+		
 		// IBM-IB-Communication
 
 		SequentialBehaviour findBuyerThanBuy = new SequentialBehaviour();
@@ -92,7 +99,7 @@ public class IngrediBoxManagerAgent extends Agent {
 		manageRecipe.addSubBehaviour(findBuyerThanBuy);
 		// IBM-IB-Communication end
 
-		this.addBehaviour(new WakerBehaviour(this, 20000) {
+		this.addBehaviour(new WakerBehaviour(this, 200) {
 
 			protected void onWake() {
 				this.getAgent().addBehaviour(manageRecipe);
@@ -135,6 +142,26 @@ public class IngrediBoxManagerAgent extends Agent {
 
 	public void setCodec(Codec codec) {
 		this.codec = codec;
+	}
+	
+	public ArrayList<Ingredient> getShoppingList()
+	{
+		return shoppingList;
+	}
+
+	public void setShoppingList(ArrayList<Ingredient> shoppingList)
+	{
+		this.shoppingList = shoppingList;
+	}
+
+	public ArrayList<Ingredient> getAvailableIngredientList()
+	{
+		return availableIngredientList;
+	}
+
+	public void setAvailableIngredientList(ArrayList<Ingredient> availableIngredientList)
+	{
+		this.availableIngredientList = availableIngredientList;
 	}
 
 }
