@@ -82,7 +82,7 @@ public class RequestResponse extends AchieveREResponder
 	{
 		response = request.createReply();
 		//for testing refuse-case
-	//	inventoryManagerAgent.getAvailableRequestedIngredients().clear();
+//		inventoryManagerAgent.getAvailableRequestedIngredients().clear();
 		if (request.getContent() != null)
 		{
 			if (!inventoryManagerAgent.getAvailableRequestedIngredients().isEmpty())

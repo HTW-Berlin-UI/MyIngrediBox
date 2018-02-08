@@ -21,7 +21,8 @@ import myIngrediBox.agents.inventoryManager.CheckAvailability;
 import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.ontologies.IngredientSendingAction;
 
-public class InventoryRequest extends AchieveREInitiator {
+public class InventoryRequest extends AchieveREInitiator
+{
 
 	ArrayList<Ingredient> requestedIngredientList;
 	ArrayList<Ingredient> availableIngredientList;
@@ -31,22 +32,25 @@ public class InventoryRequest extends AchieveREInitiator {
 
 	private static final long serialVersionUID = 1L;
 
-	public InventoryRequest(Agent a, ACLMessage msg) {
+	public InventoryRequest(Agent a, ACLMessage msg)
+	{
 		super(a, msg);
 		this.ingrediBoxManagerAgent = (IngrediBoxManagerAgent) a;
-
 	}
 
 	/**
 	 * prepares the ACLMessage(s) for Requesting Ingredients
 	 */
 	@Override
-	protected Vector prepareRequests(ACLMessage request) {
+	protected Vector prepareRequests(ACLMessage request)
+	{
 		Vector v = new Vector();
-
+		
 		this.requestedIngredientList = ingrediBoxManagerAgent.getRecipe();
 
-		if (!this.requestedIngredientList.isEmpty()) {
+
+		if (!this.requestedIngredientList.isEmpty())
+		{
 			// Request the ingredients from the recipe at InventoryManager
 			IngredientSendingAction ingredientRequestAction = new IngredientSendingAction();
 			ingredientRequestAction.setIngredients(requestedIngredientList);
@@ -62,9 +66,11 @@ public class InventoryRequest extends AchieveREInitiator {
 			request.addReceiver(inventoryManagers.get(0));
 			request.setLanguage(ingrediBoxManagerAgent.getCodec().getName());
 
-			try {
+			try
+			{
 				this.getAgent().getContentManager().fillContent(request, requestIngredientsAction);
-			} catch (CodecException | OntologyException e) {
+			} catch (CodecException | OntologyException e)
+			{
 				e.printStackTrace();
 			}
 
@@ -78,7 +84,8 @@ public class InventoryRequest extends AchieveREInitiator {
 	 * Responder role agreed => this method is automatically called
 	 */
 	@Override
-	protected void handleAgree(ACLMessage agree) {
+	protected void handleAgree(ACLMessage agree)
+	{
 		// System.out.println("\nAgreed: " + agree);
 	}
 
@@ -104,70 +111,15 @@ public class InventoryRequest extends AchieveREInitiator {
 				Action action = (Action) ce;
 				IngredientSendingAction availableIngredientReceivingAction = (IngredientSendingAction) action
 						.getAction();
-
-				// "ReduceRecipe"
-				availableIngredientList = availableIngredientReceivingAction.getIngredients();
-				shoppingList = ingrediBoxManagerAgent.getShoppingList();
-				ArrayList<Ingredient> recipe = ingrediBoxManagerAgent.getRecipe();
-
-				Iterator<Ingredient> availableIngredientIterator = availableIngredientList.iterator();
-				Iterator<Ingredient> recipeIterator = recipe.iterator();
-
-				if (!availableIngredientList.isEmpty())
-				{
-					// check order necessity
-					while (recipeIterator.hasNext())
-					{
-						Ingredient recipeIngredient = (Ingredient) recipeIterator.next();
-
-						if (availableIngredientIterator.hasNext())
-						{
-							Ingredient availableIngredient = (Ingredient) availableIngredientIterator.next();
-
-							if (availableIngredientList.contains(recipeIngredient))
-							{
-
-								int indexRp = recipe.indexOf(availableIngredient);
-
-								boolean haveSameUnit = recipeIngredient.getUnit().equals(availableIngredient.getUnit());
-
-								// set remaining quantity of request and inventory ingredient
-								if (haveSameUnit)
-								{
-									if (recipeIngredient.getQuantity() > availableIngredient.getQuantity())
-									{
-										recipe.get(indexRp).setQuantity(
-												recipeIngredient.getQuantity() - availableIngredient.getQuantity());
-										shoppingList.add(recipeIngredient);
-									} else if (recipeIngredient.getQuantity() == availableIngredient.getQuantity())
-									{
-										recipeIterator.remove();
-									}
-								}
-							}
-						}
-
-						// add ingredi's to shoppinglist, which weren't available from inventory
-						else
-						{
-							shoppingList.add(recipeIngredient);
-						}
-					}
-				}
-
-				// Set ShoppingList
-				ingrediBoxManagerAgent.setShoppingList(shoppingList);
+				ingrediBoxManagerAgent.setAvailableIngredientList(availableIngredientReceivingAction.getIngredients());
 				
-				//Printing available ingredients received
-				Iterator<Ingredient> iterator = availableIngredientReceivingAction.getIngredients().iterator();
-				System.out.println("\nIBM received available ingredients: ");
-				while (iterator.hasNext())
-				{
-					Ingredient ingredient = iterator.next();
-					System.out.print(ingredient.getQuantity() + " " + ingredient.getName() + "\t");
-				}
-				System.out.println("\n");
+				availableIngredientList = availableIngredientReceivingAction.getIngredients();
+				
+				//share availableIngredientList with DataStore
+				this.getDataStore().put("availableIngredientList", availableIngredientList);
 
+				
+				
 			}
 		} catch (UngroundedException e)
 		{
@@ -189,24 +141,34 @@ public class InventoryRequest extends AchieveREInitiator {
 	 * Responder doesnt want to play with us
 	 */
 	@Override
-	protected void handleRefuse(ACLMessage refuse) {
+	protected void handleRefuse(ACLMessage refuse)
+	{
+		System.out.println(refuse);
+
 		ContentElement ce = null;
-		try {
+		try
+		{
 			ce = this.myAgent.getContentManager().extractContent(refuse);
-		} catch (UngroundedException e) {
+		} catch (UngroundedException e)
+		{
 			e.printStackTrace();
-		} catch (CodecException e) {
+		} catch (CodecException e)
+		{
 			e.printStackTrace();
-		} catch (OntologyException e) {
+		} catch (OntologyException e)
+		{
 			e.printStackTrace();
 		}
 
-		if (ce != null) {
-			try {
+		if (ce != null)
+		{
+			try
+			{
 				// NOT in combination with our Predicate InCatalogue tells us
 				// LibAgent does not know book => in RL stop querying
 				AbsPredicate ap = (AbsPredicate) ce;
-				if (ap.getTypeName().equalsIgnoreCase(SLVocabulary.NOT)) {
+				if (ap.getTypeName().equalsIgnoreCase(SLVocabulary.NOT))
+				{
 
 					// try
 					// {
@@ -227,11 +189,13 @@ public class InventoryRequest extends AchieveREInitiator {
 
 				}
 
-			} catch (ClassCastException cce2) {
+			} catch (ClassCastException cce2)
+			{
 				System.out.println("\nRefuse not understood: " + ce);
 			}
 
-		} else {
+		} else
+		{
 			System.out.println("\nRefuse with empty Content: " + refuse);
 		}
 

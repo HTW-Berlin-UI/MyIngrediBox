@@ -83,8 +83,8 @@ public class CheckAvailability extends OneShotBehaviour
 		inventoryManagerAgent.setAvailableRequestedIngredients(ingredientBasket);
 	
 		printList(inventory, "Updated Inventory");
-		printList(requestedIngredients, "Left Request (left to buy)");
-		printList(ingredientBasket, "Ingredient Basket (to send to IBM)");
+	//	printList(requestedIngredients, "Left Request (left to buy)");
+	//	printList(ingredientBasket, "Ingredient Basket (to send to IBM)");
 	}
 
 	@Override
