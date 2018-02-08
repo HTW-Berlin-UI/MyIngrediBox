@@ -68,7 +68,7 @@ public class IngrediBoxManagerAgent extends Agent {
 		findBuyerThanBuy.addSubBehaviour(findBuyer);
 		findBuyerThanBuy.addSubBehaviour(buy);
 
-		this.addBehaviour(new WakerBehaviour(this, 20000) {
+		this.addBehaviour(new WakerBehaviour(this, 22000) {
 
 			protected void onWake() {
 				this.getAgent().addBehaviour(findBuyerThanBuy);
