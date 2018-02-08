@@ -10,17 +10,16 @@ import myIngrediBox.shared.behaviours.PrintIngredientList;
 
 public class CheckAvailability extends OneShotBehaviour
 {
-
 	private static final long serialVersionUID = 1L;
+	
 	private InventoryManagerAgent inventoryManagerAgent;
-	private ArrayList<Ingredient> inventory;
-	private ArrayList<Ingredient> requestedIngredients;
-	private ArrayList<Ingredient> ingredientBasket = new ArrayList<>();
+	private ArrayList<Ingredient> inventory= new ArrayList<>();
+	private ArrayList<Ingredient> requestedIngredients = new ArrayList<>();
+	private ArrayList<Ingredient> availableIngredients = new ArrayList<>();
 
 	public CheckAvailability(Agent a)
 	{
 		this.inventoryManagerAgent = (InventoryManagerAgent) a;
-
 	}
 
 	@Override
@@ -31,7 +30,7 @@ public class CheckAvailability extends OneShotBehaviour
 
 		Iterator<Ingredient> requestIterator = requestedIngredients.iterator();
 
-		// check availability
+		// check availability in inventory of requested ingredients
 		while (requestIterator.hasNext())
 		{
 			Ingredient requestIngredient = (Ingredient) requestIterator.next();
@@ -53,21 +52,19 @@ public class CheckAvailability extends OneShotBehaviour
 				{
 					if (inventoryIngredient.getQuantity() > requestIngredient.getQuantity())
 					{
-						ingredientBasket.add(requestIngredient);
+						availableIngredients.add(requestIngredient);
 						inventory.get(indexI)
 								.setQuantity(inventoryIngredient.getQuantity() - requestIngredient.getQuantity());
-						requestIterator.remove();
 					} else if (inventoryIngredient.getQuantity() == requestIngredient.getQuantity())
 					{
-						ingredientBasket.add(requestIngredient);
+						availableIngredients.add(requestIngredient);
 						inventory.remove(indexI);
-						requestIterator.remove();
 					} else if (inventoryIngredient.getQuantity() < requestIngredient.getQuantity())
 					{
 						requestIngredient
 								.setQuantity(requestIngredient.getQuantity() - inventoryIngredient.getQuantity());
 						inventory.remove(indexI);
-						ingredientBasket.add(requestIngredient);
+						availableIngredients.add(requestIngredient);
 					}
 				}
 			} else
@@ -80,11 +77,9 @@ public class CheckAvailability extends OneShotBehaviour
 		//Update IM's inventory
 		inventoryManagerAgent.setInventory(this.inventory);
 		//Set ingredients to pass to IBM
-		inventoryManagerAgent.setAvailableRequestedIngredients(ingredientBasket);
+		inventoryManagerAgent.setAvailableRequestedIngredients(availableIngredients);
 	
 		printList(inventory, "Updated Inventory");
-	//	printList(requestedIngredients, "Left Request (left to buy)");
-	//	printList(ingredientBasket, "Ingredient Basket (to send to IBM)");
 	}
 
 	@Override
@@ -94,7 +89,7 @@ public class CheckAvailability extends OneShotBehaviour
 		inventoryManagerAgent = null;
 		inventory = null;
 		requestedIngredients = null;
-		ingredientBasket = null;
+		availableIngredients = null;
 	}
 
 	public void printList(ArrayList<Ingredient> list, String listname)
