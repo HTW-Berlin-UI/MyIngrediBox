@@ -81,6 +81,7 @@ public class IngrediBuyerAgent extends Agent {
 
 	private void buyRequiredIngredients() {
 		// add sample list of ingredients to buy
+		// TODO refactor to respond to achieveRE
 		requiredIngredients = new ArrayList<Ingredient>();
 		requiredIngredients.add(new Ingredient("Vanille", 1, Unit.Piece));
 		requiredIngredients.add(new Ingredient("Apfelkompott", 0.1, Unit.Liter));

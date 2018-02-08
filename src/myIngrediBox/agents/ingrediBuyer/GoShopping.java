@@ -23,12 +23,12 @@ import myIngrediBox.ontologies.TradeIngredients;
 public class GoShopping extends ContractNetInitiator {
 
 	private IngrediBuyerAgent buyerAgent;
-	private HashMap<PurchasableIngredient, AID> shoppingList;
+	private BuyingController buyingController;
 
 	public GoShopping(Agent a, ACLMessage cfp) {
 		super(a, cfp);
 		this.buyerAgent = (IngrediBuyerAgent) a;
-		this.shoppingList = new HashMap<PurchasableIngredient, AID>();
+
 	}
 
 	/**
@@ -39,7 +39,8 @@ public class GoShopping extends ContractNetInitiator {
 	@Override
 	public void onStart() {
 		super.onStart();
-
+		this.buyingController = BuyingControllerFactory.getInstance()
+				.createBuyingControllerFor(BuyingPreference.CHEAPEST);
 	}
 
 	@Override
@@ -91,32 +92,8 @@ public class GoShopping extends ContractNetInitiator {
 			ArrayList<PurchasableIngredient> proposedIngredients = tradeIngredients.getIngredients();
 			if (!proposedIngredients.isEmpty()) {
 
-				for (PurchasableIngredient ingredient : proposedIngredients) {
+				this.buyingController.addOffer(a.getActor(), proposedIngredients);
 
-					// if proposed ingredient is served by another market and is cheaper than the
-					// current one
-					if (this.shoppingList.containsKey(ingredient)) {
-
-						// find the comparable ingredient on shopping list
-						for (PurchasableIngredient ingredientOnList : this.shoppingList.keySet()) {
-							if (ingredientOnList.equals(ingredient)) {
-
-								// now decide whether to replace the item on the list with new ingredient
-								if (ingredient.getPrice() < ingredientOnList.getPrice()) {
-									this.shoppingList.remove(ingredientOnList);
-									this.shoppingList.put(ingredient, a.getActor());
-								}
-
-							}
-
-						}
-
-					} else {
-						// if its a new ingredient to our list
-						this.shoppingList.put(ingredient, a.getActor());
-					}
-
-				}
 			}
 
 		} catch (UngroundedException e) {
@@ -135,6 +112,9 @@ public class GoShopping extends ContractNetInitiator {
 	protected void handleAllResponses(Vector proposals, Vector acceptances) {
 		// All proposals are in.
 		// now we buy only ingredients on our optimized shopping list
+
+		HashMap<PurchasableIngredient, AID> shoppingList = this.buyingController.getOptimizedShoppingList();
+
 		for (ACLMessage proposal : (Vector<ACLMessage>) proposals) {
 			ACLMessage reply = proposal.createReply();
 			reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
@@ -142,8 +122,8 @@ public class GoShopping extends ContractNetInitiator {
 			ArrayList<PurchasableIngredient> ingredientsToBuy = new ArrayList<PurchasableIngredient>();
 
 			// if market appears on shopping list than add appropriate ingredients to order
-			for (PurchasableIngredient ingredientOnList : this.shoppingList.keySet()) {
-				if (this.shoppingList.get(ingredientOnList).equals(proposal.getSender()))
+			for (PurchasableIngredient ingredientOnList : shoppingList.keySet()) {
+				if (shoppingList.get(ingredientOnList).equals(proposal.getSender()))
 					ingredientsToBuy.add(ingredientOnList);
 			}
 
