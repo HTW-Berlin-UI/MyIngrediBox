@@ -162,8 +162,9 @@ public class InventoryRequest extends AchieveREInitiator
 
 				// Set ShoppingList
 				ingrediBoxManagerAgent.setShoppingList(shoppingList);
+				
+				//Printing available ingredients received
 				Iterator<Ingredient> iterator = availableIngredientReceivingAction.getIngredients().iterator();
-
 				System.out.println("\nIBM received available ingredients: ");
 				while (iterator.hasNext())
 				{
