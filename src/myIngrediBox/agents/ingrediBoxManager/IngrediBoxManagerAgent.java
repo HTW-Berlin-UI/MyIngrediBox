@@ -92,7 +92,7 @@ public class IngrediBoxManagerAgent extends Agent {
 		manageRecipe.addSubBehaviour(findBuyerThanBuy);
 		// IBM-IB-Communication end
 
-		this.addBehaviour(new WakerBehaviour(this, 20) {
+		this.addBehaviour(new WakerBehaviour(this, 20000) {
 
 			protected void onWake() {
 				this.getAgent().addBehaviour(manageRecipe);
