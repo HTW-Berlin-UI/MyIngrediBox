@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.DataStore;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -19,6 +20,11 @@ public class DFQueryBehaviour extends SimpleBehaviour {
 	public DFQueryBehaviour(Agent a, String serviceType) {
 		this.a = a;
 		this.serviceType = serviceType;
+	}
+
+	public DFQueryBehaviour(Agent a, String serviceType, DataStore datastore) {
+		this(a, serviceType);
+		this.setDataStore(datastore);
 	}
 
 	public void action() {
