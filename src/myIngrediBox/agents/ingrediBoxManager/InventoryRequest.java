@@ -100,7 +100,7 @@ public class InventoryRequest extends AchieveREInitiator
 //		try
 //		{
 //			
-//			ce = ingrediBoxManagerAgent.getContentManager().extractContent(inform);
+//			ce = this.myAgent.getContentManager().extractContent(inform);
 //
 //			// and if Agent not on Java platform
 //			if (ce instanceof Action)

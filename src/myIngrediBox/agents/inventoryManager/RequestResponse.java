@@ -20,7 +20,7 @@ import jade.proto.AchieveREResponder;
 import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.ontologies.IngredientSendingAction;
 
-public class ReceiveRequest extends AchieveREResponder
+public class RequestResponse extends AchieveREResponder
 {
 
 	// receive AND responde with sending ingredients ??
@@ -28,7 +28,7 @@ public class ReceiveRequest extends AchieveREResponder
 	private static final long serialVersionUID = 1L;
 	private InventoryManagerAgent inventoryManagerAgent;
 
-	public ReceiveRequest(Agent a, MessageTemplate mt)
+	public RequestResponse(Agent a, MessageTemplate mt)
 	{
 		super(a, mt);
 		this.inventoryManagerAgent = (InventoryManagerAgent) a;
@@ -93,6 +93,7 @@ public class ReceiveRequest extends AchieveREResponder
 						.setIngredients(inventoryManagerAgent.getAvailableRequestedIngredients());
 				sendAvailableIngredientsAction.setAgent(inventoryManagerAgent.getAID());
 
+				//request.setProtocol(FIPANames.InteractionProtocol.FIPA_PROPOSE);
 				response.setPerformative(ACLMessage.INFORM);
 				response.setOntology(inventoryManagerAgent.getOntology().getName());
 				response.setLanguage(inventoryManagerAgent.getCodec().getName());

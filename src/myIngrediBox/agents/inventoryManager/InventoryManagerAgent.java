@@ -80,9 +80,9 @@ public class InventoryManagerAgent extends Agent
 		MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchLanguage(codec.getName()),
 				MessageTemplate.MatchOntology(ontology.getName()));
 		
-		ReceiveRequest receiveRequest = new ReceiveRequest(this, mt);
+		RequestResponse requestResponse = new RequestResponse(this, mt);
 		
-		this.addBehaviour(receiveRequest);
+		this.addBehaviour(requestResponse);
 		
 		this.addBehaviour(manageInventory);
 
