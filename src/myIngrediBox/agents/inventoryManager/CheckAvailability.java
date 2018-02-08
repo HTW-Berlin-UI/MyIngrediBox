@@ -6,7 +6,6 @@ import java.util.Iterator;
 import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
 import myIngrediBox.ontologies.Ingredient;
-import myIngrediBox.shared.behaviours.PrintIngredientList;
 
 public class CheckAvailability extends OneShotBehaviour
 {
@@ -42,7 +41,6 @@ public class CheckAvailability extends OneShotBehaviour
 						+ inventory.get(inventory.indexOf(requestIngredient)).getQuantity());
 
 				int indexI = inventory.indexOf(requestIngredient);
-				int indexR = requestedIngredients.indexOf(requestIngredient);
 
 				Ingredient inventoryIngredient = inventory.get(indexI);
 
