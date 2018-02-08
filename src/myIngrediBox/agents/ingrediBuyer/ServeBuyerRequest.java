@@ -1,6 +1,8 @@
 package myIngrediBox.agents.ingrediBuyer;
 
+import jade.content.onto.basic.Action;
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.DataStore;
 import jade.domain.FIPAAgentManagement.FailureException;
 import jade.domain.FIPAAgentManagement.NotUnderstoodException;
@@ -8,6 +10,7 @@ import jade.domain.FIPAAgentManagement.RefuseException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.AchieveREResponder;
+import myIngrediBox.ontologies.RequestBuyingAction;
 
 public class ServeBuyerRequest extends AchieveREResponder {
 
@@ -19,10 +22,15 @@ public class ServeBuyerRequest extends AchieveREResponder {
 	@Override
 	protected ACLMessage handleRequest(ACLMessage request) throws NotUnderstoodException, RefuseException {
 		ACLMessage response = request.createReply();
-		try { // test: content is valid dateformat + ...
+		try {
+
+			Action a = (Action) this.myAgent.getContentManager().extractContent(request);
+			RequestBuyingAction requestBuyingAction = (RequestBuyingAction) a.getAction();
+
+			this.getDataStore().put("requiredIngredients", requestBuyingAction.getRequiredIngredients());
+
 		} catch (Exception e) {
 			response.setPerformative(ACLMessage.NOT_UNDERSTOOD);
-			response.setContent("Wrong DateFormat");
 			throw new NotUnderstoodException(response);
 		}
 
@@ -46,6 +54,12 @@ public class ServeBuyerRequest extends AchieveREResponder {
 		}
 
 		return response;
+	}
+
+	@Override
+	public void registerPrepareResultNotification(Behaviour b) {
+		// TODO Auto-generated method stub
+		super.registerPrepareResultNotification(b);
 	}
 
 }
