@@ -80,13 +80,14 @@ public class RequestResponse extends AchieveREResponder
 	@Override
 	protected ACLMessage prepareResultNotification(ACLMessage request, ACLMessage response) throws FailureException
 	{
+		response = request.createReply();
 		//for testing refuse-case
 	//	inventoryManagerAgent.getAvailableRequestedIngredients().clear();
 		if (request.getContent() != null)
 		{
 			if (!inventoryManagerAgent.getAvailableRequestedIngredients().isEmpty())
 			{
-
+				
 				// Send available ingredients to IBM
 				IngredientSendingAction sendAvailableIngredientsAction = new IngredientSendingAction();
 				sendAvailableIngredientsAction
@@ -95,12 +96,11 @@ public class RequestResponse extends AchieveREResponder
 
 				//request.setProtocol(FIPANames.InteractionProtocol.FIPA_PROPOSE);
 				response.setPerformative(ACLMessage.INFORM);
-				response.setOntology(inventoryManagerAgent.getOntology().getName());
-				response.setLanguage(inventoryManagerAgent.getCodec().getName());
-
+				
 				try
 				{
-					this.getAgent().getContentManager().fillContent(response, sendAvailableIngredientsAction);
+					Action responseAction = new Action(this.getAgent().getAID(), sendAvailableIngredientsAction);
+					this.getAgent().getContentManager().fillContent(response, responseAction);
 				} catch (CodecException | OntologyException e)
 				{
 					e.printStackTrace();

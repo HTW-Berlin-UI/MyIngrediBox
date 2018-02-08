@@ -92,49 +92,48 @@ public class InventoryRequest extends AchieveREInitiator
 	@Override
 	protected void handleInform(ACLMessage inform)
 	{
-		System.out.println("\nIBM received Inform from IM: " + inform);
 
-//		ContentElement ce = null;
-//
-//		// ce will be instance of Action
-//		try
-//		{
-//			
-//			ce = this.myAgent.getContentManager().extractContent(inform);
-//
-//			// and if Agent not on Java platform
-//			if (ce instanceof Action)
-//			{
-//				Action action = (Action) ce;
-//				IngredientSendingAction availableIngredientReceivingAction = (IngredientSendingAction) action
-//						.getAction();
-//				//ReduceRecipe
-//				ingrediBoxManagerAgent.setShoppingList(availableIngredientReceivingAction.getIngredients());
-//				Iterator<Ingredient> iterator = availableIngredientReceivingAction.getIngredients().iterator();
-//
-//				System.out.println("\nIBM received available ingredients: ");
-//				while (iterator.hasNext())
-//				{
-//					Ingredient ingredient = iterator.next();
-//					System.out.print(ingredient.getQuantity() + " " + ingredient.getName() + "\t");
-//				}
-//				System.out.println("\n");
-//
-//			}
-//		} catch (UngroundedException e)
-//		{
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (CodecException e)
-//		{
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (OntologyException e)
-//		{
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		ContentElement ce = null;
 
+		// ce will be instance of Action
+		try
+		{
+			
+			ce = this.myAgent.getContentManager().extractContent(inform);
+
+			// and if Agent not on Java platform
+			if (ce instanceof Action)
+			{
+				Action action = (Action) ce;
+				IngredientSendingAction availableIngredientReceivingAction = (IngredientSendingAction) action
+						.getAction();
+				//ReduceRecipe
+				ingrediBoxManagerAgent.setShoppingList(availableIngredientReceivingAction.getIngredients());
+				Iterator<Ingredient> iterator = availableIngredientReceivingAction.getIngredients().iterator();
+
+				System.out.println("\nIBM received available ingredients: ");
+				while (iterator.hasNext())
+				{
+					Ingredient ingredient = iterator.next();
+					System.out.print(ingredient.getQuantity() + " " + ingredient.getName() + "\t");
+				}
+				System.out.println("\n");
+
+			}
+		} catch (UngroundedException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CodecException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OntologyException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	/**
