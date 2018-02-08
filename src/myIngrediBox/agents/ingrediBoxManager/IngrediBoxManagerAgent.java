@@ -8,6 +8,7 @@ import jade.content.onto.Ontology;
 import jade.core.Agent;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.core.behaviours.WakerBehaviour;
+import jade.domain.FIPANames;
 import jade.lang.acl.ACLMessage;
 import myIngrediBox.ontologies.IngrediBoxOntology;
 import myIngrediBox.ontologies.Ingredient;
@@ -15,8 +16,7 @@ import myIngrediBox.shared.behaviours.DFQueryBehaviour;
 import myIngrediBox.shared.behaviours.PrintRecipeIngredientList;
 import myIngrediBox.shared.behaviours.ReadFromFile;
 
-public class IngrediBoxManagerAgent extends Agent
-{
+public class IngrediBoxManagerAgent extends Agent {
 
 	private static final long serialVersionUID = 1L;
 
@@ -36,8 +36,7 @@ public class IngrediBoxManagerAgent extends Agent
 	private Ontology ontology = IngrediBoxOntology.getInstance();
 
 	@Override
-	protected void setup()
-	{
+	protected void setup() {
 		super.setup();
 
 		this.recipe = new ArrayList<Ingredient>();
@@ -55,6 +54,30 @@ public class IngrediBoxManagerAgent extends Agent
 		manageRecipe.addSubBehaviour(parseRecipe);
 		manageRecipe.addSubBehaviour(printRecipeIngredientBehaviour);
 
+		// IBM-IB-Communication
+
+		SequentialBehaviour findBuyerThanBuy = new SequentialBehaviour();
+		DFQueryBehaviour findBuyer = new DFQueryBehaviour(this, "Ingredient-Buying-Service",
+				findBuyerThanBuy.getDataStore());
+
+		ACLMessage m = new ACLMessage(ACLMessage.REQUEST);
+		m.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
+		m.setConversationId("buyer-request");
+		BuyerRequest buy = new BuyerRequest(this, m, findBuyerThanBuy.getDataStore());
+
+		findBuyerThanBuy.addSubBehaviour(findBuyer);
+		findBuyerThanBuy.addSubBehaviour(buy);
+
+		this.addBehaviour(new WakerBehaviour(this, 20000) {
+
+			protected void onWake() {
+				this.getAgent().addBehaviour(findBuyerThanBuy);
+			}
+
+		});
+
+		// IBM-IB-Communication end
+
 		this.addBehaviour(manageRecipe);
 
 		this.getContentManager().registerLanguage(codec);
@@ -67,12 +90,12 @@ public class IngrediBoxManagerAgent extends Agent
 
 			private static final long serialVersionUID = 1L;
 
-			protected void onWake()
-			{
+			protected void onWake() {
 				this.myAgent.addBehaviour(dfQueryBehaviour);
 
 				// register adapted AchieveREINitiator Behaviour
 				ACLMessage m = new ACLMessage(ACLMessage.REQUEST);
+				m.setConversationId("inventory-request");
 				m.setContent("Hi, this is an InventoryRequest");
 
 				Ingredient ingredientToRequest = new Ingredient();
@@ -94,33 +117,27 @@ public class IngrediBoxManagerAgent extends Agent
 		super.takeDown();
 	}
 
-	public void setRecipe(ArrayList<Ingredient> recipe)
-	{
+	public void setRecipe(ArrayList<Ingredient> recipe) {
 		this.recipe = recipe;
 	}
 
-	public ArrayList<Ingredient> getRecipe()
-	{
+	public ArrayList<Ingredient> getRecipe() {
 		return recipe;
 	}
 
-	public Ontology getOntology()
-	{
+	public Ontology getOntology() {
 		return ontology;
 	}
 
-	public void setOntology(Ontology ontology)
-	{
+	public void setOntology(Ontology ontology) {
 		this.ontology = ontology;
 	}
 
-	public Codec getCodec()
-	{
+	public Codec getCodec() {
 		return codec;
 	}
 
-	public void setCodec(Codec codec)
-	{
+	public void setCodec(Codec codec) {
 		this.codec = codec;
 	}
 	

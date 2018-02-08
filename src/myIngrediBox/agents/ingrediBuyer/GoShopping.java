@@ -201,4 +201,13 @@ public class GoShopping extends ContractNetInitiator {
 
 	}
 
+	@Override
+	protected void handleAllResultNotifications(Vector resultNotifications) {
+		// at this stage the trades have finished
+
+		System.out.println("alle results da");
+
+		super.handleAllResultNotifications(resultNotifications);
+	}
+
 }
