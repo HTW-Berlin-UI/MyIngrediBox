@@ -38,6 +38,9 @@ public class IngrediBoxManagerAgent extends Agent {
 
 		this.recipe = new ArrayList<Ingredient>();
 
+		this.getContentManager().registerLanguage(codec);
+		this.getContentManager().registerOntology(ontology);
+
 		// Load Recipe
 		ReadFromFile loadRecipe = new ReadFromFile("assets/recipes/EierkuchenSpezial.json");
 		ParseRecipe parseRecipe = new ParseRecipe();
@@ -50,6 +53,26 @@ public class IngrediBoxManagerAgent extends Agent {
 		manageRecipe.addSubBehaviour(loadRecipe);
 		manageRecipe.addSubBehaviour(parseRecipe);
 		manageRecipe.addSubBehaviour(printRecipeIngredientBehaviour);
+
+		// IMB-IM-Communication
+
+		SequentialBehaviour findInventoryThanCheckAvailability = new SequentialBehaviour();
+		DFQueryBehaviour findInventory = new DFQueryBehaviour(this, "Inventory-Managing-Service",
+				findInventoryThanCheckAvailability.getDataStore());
+
+		findInventoryThanCheckAvailability.addSubBehaviour(findInventory);
+
+		// register adapted AchieveREINitiator Behaviour
+		ACLMessage im = new ACLMessage(ACLMessage.REQUEST);
+		im.setConversationId("inventory-request");
+		InventoryRequest inventoryRequest = new InventoryRequest(this, im);
+		inventoryRequest.setDataStore(findInventoryThanCheckAvailability.getDataStore());
+		findInventoryThanCheckAvailability.addSubBehaviour(inventoryRequest);
+
+		findInventoryThanCheckAvailability.setDataStore(manageRecipe.getDataStore());
+		manageRecipe.addSubBehaviour(findInventoryThanCheckAvailability);
+
+		// IMB-IM-Communication end
 
 		// IBM-IB-Communication
 
@@ -65,49 +88,21 @@ public class IngrediBoxManagerAgent extends Agent {
 		findBuyerThanBuy.addSubBehaviour(findBuyer);
 		findBuyerThanBuy.addSubBehaviour(buy);
 
-		this.addBehaviour(new WakerBehaviour(this, 22000) {
-
-			protected void onWake() {
-				this.getAgent().addBehaviour(findBuyerThanBuy);
-			}
-
-		});
-
+		findBuyerThanBuy.setDataStore(manageRecipe.getDataStore());
+		manageRecipe.addSubBehaviour(findBuyerThanBuy);
 		// IBM-IB-Communication end
 
-		this.addBehaviour(manageRecipe);
-
-		this.getContentManager().registerLanguage(codec);
-		this.getContentManager().registerOntology(ontology);
-
-		DFQueryBehaviour dfQueryBehaviour = new DFQueryBehaviour(this, "Inventory-Managing-Service");
-
-		// for testing normal way would be user-interaction or another system
 		this.addBehaviour(new WakerBehaviour(this, 20000) {
 
-			private static final long serialVersionUID = 1L;
-
 			protected void onWake() {
-				this.myAgent.addBehaviour(dfQueryBehaviour);
-
-				// register adapted AchieveREINitiator Behaviour
-				ACLMessage m = new ACLMessage(ACLMessage.REQUEST);
-				m.setConversationId("inventory-request");
-				m.setContent("Hi, this is an InventoryRequest");
-
-				Ingredient ingredientToRequest = new Ingredient();
-				ingredientToRequest = getRecipe().get(0);
-				InventoryRequest inventoryRequest = new InventoryRequest(myAgent, m);
-				inventoryRequest.setDataStore(dfQueryBehaviour.getDataStore());
-				this.myAgent.addBehaviour(inventoryRequest);
-
-				// TODO send Ingredis as ArrayList!! (like in RequestOffer Class and GoShoppin
-				// Class)
-				// oder inventoryRequest.setIngredientToRequest(itreq);...bauen
-
+				this.getAgent().addBehaviour(manageRecipe);
 			}
 
 		});
+
+		// TODO send Ingredis as ArrayList!! (like in RequestOffer Class and GoShoppin
+		// Class)
+		// oder inventoryRequest.setIngredientToRequest(itreq);...bauen
 
 	}
 
