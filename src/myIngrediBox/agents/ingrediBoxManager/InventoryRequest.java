@@ -25,6 +25,8 @@ public class InventoryRequest extends AchieveREInitiator
 {
 
 	ArrayList<Ingredient> requestedIngredientList;
+	ArrayList<Ingredient> availableIngredientList;
+	ArrayList<Ingredient> shoppingList;
 
 	private IngrediBoxManagerAgent ingrediBoxManagerAgent;
 
@@ -98,7 +100,7 @@ public class InventoryRequest extends AchieveREInitiator
 		// ce will be instance of Action
 		try
 		{
-			
+
 			ce = this.myAgent.getContentManager().extractContent(inform);
 
 			// and if Agent not on Java platform
@@ -107,8 +109,59 @@ public class InventoryRequest extends AchieveREInitiator
 				Action action = (Action) ce;
 				IngredientSendingAction availableIngredientReceivingAction = (IngredientSendingAction) action
 						.getAction();
-				//ReduceRecipe
-				ingrediBoxManagerAgent.setShoppingList(availableIngredientReceivingAction.getIngredients());
+
+				// "ReduceRecipe"
+				availableIngredientList = availableIngredientReceivingAction.getIngredients();
+				shoppingList = ingrediBoxManagerAgent.getShoppingList();
+				ArrayList<Ingredient> recipe = ingrediBoxManagerAgent.getRecipe();
+
+				Iterator<Ingredient> availableIngredientIterator = availableIngredientList.iterator();
+				Iterator<Ingredient> recipeIterator = recipe.iterator();
+
+				if (!availableIngredientList.isEmpty())
+				{
+					// check order necessity
+					while (recipeIterator.hasNext())
+					{
+						Ingredient recipeIngredient = (Ingredient) recipeIterator.next();
+
+						if (availableIngredientIterator.hasNext())
+						{
+							Ingredient availableIngredient = (Ingredient) availableIngredientIterator.next();
+
+							if (availableIngredientList.contains(recipeIngredient))
+							{
+
+								int indexRp = recipe.indexOf(availableIngredient);
+
+								boolean haveSameUnit = recipeIngredient.getUnit().equals(availableIngredient.getUnit());
+
+								// set remaining quantity of request and inventory ingredient
+								if (haveSameUnit)
+								{
+									if (recipeIngredient.getQuantity() > availableIngredient.getQuantity())
+									{
+										recipe.get(indexRp).setQuantity(
+												recipeIngredient.getQuantity() - availableIngredient.getQuantity());
+										shoppingList.add(recipeIngredient);
+									} else if (recipeIngredient.getQuantity() == availableIngredient.getQuantity())
+									{
+										recipeIterator.remove();
+									}
+								}
+							}
+						}
+
+						// add ingredi's to shoppinglist, which weren't available from inventory
+						else
+						{
+							shoppingList.add(recipeIngredient);
+						}
+					}
+				}
+
+				// Set ShoppingList
+				ingrediBoxManagerAgent.setShoppingList(shoppingList);
 				Iterator<Ingredient> iterator = availableIngredientReceivingAction.getIngredients().iterator();
 
 				System.out.println("\nIBM received available ingredients: ");
@@ -133,7 +186,7 @@ public class InventoryRequest extends AchieveREInitiator
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/**

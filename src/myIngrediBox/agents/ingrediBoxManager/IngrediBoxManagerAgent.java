@@ -21,7 +21,7 @@ public class IngrediBoxManagerAgent extends Agent {
 	private static final long serialVersionUID = 1L;
 
 	private ArrayList<Ingredient> recipe;
-	ArrayList<Ingredient> shoppingList;
+	ArrayList<Ingredient> shoppingList = new ArrayList<>();
 
 
 
