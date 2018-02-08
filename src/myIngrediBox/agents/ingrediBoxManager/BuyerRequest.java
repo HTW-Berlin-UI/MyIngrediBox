@@ -48,8 +48,15 @@ public class BuyerRequest extends AchieveREInitiator {
 		request.setOntology(this.ibm.getOntology().getName());
 		request.setLanguage(this.ibm.getCodec().getName());
 		RequestBuyingAction requestBuyingAction = new RequestBuyingAction();
+		
+		if(!ibm.getShoppingList().isEmpty()) {
+			requestBuyingAction.setRequiredIngredients(ibm.getShoppingList());
+		}
+		else {
+			//Set sample data
+			requestBuyingAction.setRequiredIngredients(requiredIngredients);
+		}
 
-		requestBuyingAction.setRequiredIngredients(requiredIngredients);
 		Action a = new Action(buyerAgent, requestBuyingAction);
 
 		request.addReceiver(buyerAgent);
