@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import jade.content.lang.Codec.CodecException;
 import jade.content.onto.OntologyException;
+import jade.content.onto.UngroundedException;
 import jade.content.onto.basic.Action;
 import jade.core.AID;
 import jade.core.Agent;
@@ -12,7 +13,9 @@ import jade.core.behaviours.DataStore;
 import jade.lang.acl.ACLMessage;
 import jade.proto.AchieveREInitiator;
 import myIngrediBox.ontologies.Ingredient;
+import myIngrediBox.ontologies.PurchasableIngredient;
 import myIngrediBox.ontologies.RequestBuyingAction;
+import myIngrediBox.ontologies.SendPurchase;
 import myIngrediBox.ontologies.Unit;
 
 public class BuyerRequest extends AchieveREInitiator {
@@ -77,8 +80,28 @@ public class BuyerRequest extends AchieveREInitiator {
 	 */
 	@Override
 	protected void handleInform(ACLMessage inform) {
-		// System.out.println("\nSome Inform: " + inform);
-		System.out.println("-> ibm hat antwort von buyer");
+		// ingredients are bought at this stage
+		Action a;
+		try {
+			a = (Action) this.myAgent.getContentManager().extractContent(inform);
+			SendPurchase sendPurchase = (SendPurchase) a.getAction();
+			ArrayList<PurchasableIngredient> boughtIngredients = sendPurchase.getBoughtIngredients();
+
+			System.out.println(
+					"These ingredients are bought from " + inform.getSender().getLocalName() + ":" + boughtIngredients);
+
+			this.getDataStore().put("boughtIngredients", boughtIngredients);
+
+		} catch (UngroundedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CodecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OntologyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

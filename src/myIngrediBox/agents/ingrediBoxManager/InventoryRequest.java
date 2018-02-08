@@ -21,8 +21,7 @@ import myIngrediBox.agents.inventoryManager.CheckAvailability;
 import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.ontologies.IngredientSendingAction;
 
-public class InventoryRequest extends AchieveREInitiator
-{
+public class InventoryRequest extends AchieveREInitiator {
 
 	ArrayList<Ingredient> requestedIngredientList;
 	ArrayList<Ingredient> availableIngredientList;
@@ -32,23 +31,22 @@ public class InventoryRequest extends AchieveREInitiator
 
 	private static final long serialVersionUID = 1L;
 
-	public InventoryRequest(Agent a, ACLMessage msg)
-	{
+	public InventoryRequest(Agent a, ACLMessage msg) {
 		super(a, msg);
 		this.ingrediBoxManagerAgent = (IngrediBoxManagerAgent) a;
-		this.requestedIngredientList = ingrediBoxManagerAgent.getRecipe();
+
 	}
 
 	/**
 	 * prepares the ACLMessage(s) for Requesting Ingredients
 	 */
 	@Override
-	protected Vector prepareRequests(ACLMessage request)
-	{
+	protected Vector prepareRequests(ACLMessage request) {
 		Vector v = new Vector();
 
-		if (!this.requestedIngredientList.isEmpty())
-		{
+		this.requestedIngredientList = ingrediBoxManagerAgent.getRecipe();
+
+		if (!this.requestedIngredientList.isEmpty()) {
 			// Request the ingredients from the recipe at InventoryManager
 			IngredientSendingAction ingredientRequestAction = new IngredientSendingAction();
 			ingredientRequestAction.setIngredients(requestedIngredientList);
@@ -64,11 +62,9 @@ public class InventoryRequest extends AchieveREInitiator
 			request.addReceiver(inventoryManagers.get(0));
 			request.setLanguage(ingrediBoxManagerAgent.getCodec().getName());
 
-			try
-			{
+			try {
 				this.getAgent().getContentManager().fillContent(request, requestIngredientsAction);
-			} catch (CodecException | OntologyException e)
-			{
+			} catch (CodecException | OntologyException e) {
 				e.printStackTrace();
 			}
 
@@ -82,8 +78,7 @@ public class InventoryRequest extends AchieveREInitiator
 	 * Responder role agreed => this method is automatically called
 	 */
 	@Override
-	protected void handleAgree(ACLMessage agree)
-	{
+	protected void handleAgree(ACLMessage agree) {
 		// System.out.println("\nAgreed: " + agree);
 	}
 
@@ -194,34 +189,24 @@ public class InventoryRequest extends AchieveREInitiator
 	 * Responder doesnt want to play with us
 	 */
 	@Override
-	protected void handleRefuse(ACLMessage refuse)
-	{
-		System.out.println(refuse);
-
+	protected void handleRefuse(ACLMessage refuse) {
 		ContentElement ce = null;
-		try
-		{
+		try {
 			ce = this.myAgent.getContentManager().extractContent(refuse);
-		} catch (UngroundedException e)
-		{
+		} catch (UngroundedException e) {
 			e.printStackTrace();
-		} catch (CodecException e)
-		{
+		} catch (CodecException e) {
 			e.printStackTrace();
-		} catch (OntologyException e)
-		{
+		} catch (OntologyException e) {
 			e.printStackTrace();
 		}
 
-		if (ce != null)
-		{
-			try
-			{
+		if (ce != null) {
+			try {
 				// NOT in combination with our Predicate InCatalogue tells us
 				// LibAgent does not know book => in RL stop querying
 				AbsPredicate ap = (AbsPredicate) ce;
-				if (ap.getTypeName().equalsIgnoreCase(SLVocabulary.NOT))
-				{
+				if (ap.getTypeName().equalsIgnoreCase(SLVocabulary.NOT)) {
 
 					// try
 					// {
@@ -242,13 +227,11 @@ public class InventoryRequest extends AchieveREInitiator
 
 				}
 
-			} catch (ClassCastException cce2)
-			{
+			} catch (ClassCastException cce2) {
 				System.out.println("\nRefuse not understood: " + ce);
 			}
 
-		} else
-		{
+		} else {
 			System.out.println("\nRefuse with empty Content: " + refuse);
 		}
 
