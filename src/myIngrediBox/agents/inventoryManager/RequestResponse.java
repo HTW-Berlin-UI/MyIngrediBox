@@ -94,7 +94,6 @@ public class RequestResponse extends AchieveREResponder
 						.setIngredients(inventoryManagerAgent.getAvailableRequestedIngredients());
 				sendAvailableIngredientsAction.setAgent(inventoryManagerAgent.getAID());
 
-				//request.setProtocol(FIPANames.InteractionProtocol.FIPA_PROPOSE);
 				response.setPerformative(ACLMessage.INFORM);
 				
 				try
