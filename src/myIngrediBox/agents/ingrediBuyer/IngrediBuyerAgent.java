@@ -14,7 +14,6 @@ import jade.lang.acl.MessageTemplate;
 import jade.proto.AchieveREResponder;
 import myIngrediBox.ontologies.IngrediBoxOntology;
 import myIngrediBox.ontologies.Ingredient;
-import myIngrediBox.ontologies.Unit;
 import myIngrediBox.shared.behaviours.DFQueryBehaviour;
 import myIngrediBox.shared.behaviours.RegisterServiceBehaviour;
 
@@ -29,22 +28,6 @@ public class IngrediBuyerAgent extends Agent {
 	 * ontology used for semantic parsing
 	 */
 	private Ontology ontology = IngrediBoxOntology.getInstance();
-
-	public Codec getCodec() {
-		return codec;
-	}
-
-	public void setCodec(Codec codec) {
-		this.codec = codec;
-	}
-
-	public Ontology getOntology() {
-		return ontology;
-	}
-
-	public void setOntology(Ontology ontology) {
-		this.ontology = ontology;
-	}
 
 	/**
 	 * 
@@ -80,40 +63,31 @@ public class IngrediBuyerAgent extends Agent {
 	}
 
 	private void buyRequiredIngredients() {
-		// add sample list of ingredients to buy
-		// TODO refactor to respond to achieveRE
-		requiredIngredients = new ArrayList<Ingredient>();
-		requiredIngredients.add(new Ingredient("Vanille", 1, Unit.Piece));
-		requiredIngredients.add(new Ingredient("Apfelkompott", 0.1, Unit.Liter));
-		requiredIngredients.add(new Ingredient("Mehl", 0.5, Unit.Kilo));
 
-		/*
-		 * first find markets than start trading
-		 */
+		// find markets than start trading
 		SequentialBehaviour findMarketsThanBuy = new SequentialBehaviour();
 
 		// find markets
-		DFQueryBehaviour findMarkets = new DFQueryBehaviour(this, "Ingredient-Selling-Service");
+		DFQueryBehaviour findMarkets = new DFQueryBehaviour(this, "Ingredient-Selling-Service",
+				findMarketsThanBuy.getDataStore());
 		findMarketsThanBuy.addSubBehaviour(findMarkets);
-		findMarkets.setDataStore(findMarketsThanBuy.getDataStore());
 
 		// start trading with markets to find best buying options
 		ACLMessage m = new ACLMessage(ACLMessage.CFP);
 		m.setProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET);
-		GoShopping goShopping = new GoShopping(this, m);
-		goShopping.setDataStore(findMarketsThanBuy.getDataStore());
+		GoShopping goShopping = new GoShopping(this, m, findMarketsThanBuy.getDataStore());
+		findMarketsThanBuy.addSubBehaviour(goShopping);
 
 		// await buyer request
 		MessageTemplate mt = AchieveREResponder.createMessageTemplate(FIPANames.InteractionProtocol.FIPA_REQUEST);
 		mt = MessageTemplate.and(MessageTemplate.MatchConversationId("buyer-request"),
 				MessageTemplate.MatchProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST));
 		ServeBuyerRequest serveBuyerRequest = new ServeBuyerRequest(this, mt, findMarketsThanBuy.getDataStore());
-		serveBuyerRequest.registerPrepareResultNotification(goShopping);
+		// add contractnet as state of request handling
+		serveBuyerRequest.registerPrepareResultNotification(findMarketsThanBuy);
 
-		findMarketsThanBuy.addSubBehaviour(serveBuyerRequest);
-
-		// finally add trading behaviour to agent
-		this.addBehaviour(findMarketsThanBuy);
+		// finally add request handling behaviour to agent
+		this.addBehaviour(serveBuyerRequest);
 
 	}
 

@@ -38,6 +38,18 @@
             "type": "solid",
             "unit": "Kilo",
             "quantity": 6
+        },
+        {
+            "name": "Vanille",
+            "type": "misc",
+            "unit": "Piece",
+            "quantity": 1
+        },
+        {
+            "name": "Apfelkompott",
+            "type": "liquid",
+            "unit": "Liter",
+            "quantity": 0.5
         }
     ]
 }
