@@ -13,6 +13,16 @@ public class RequestBuyingAction implements AgentAction {
 
 	private ArrayList<Ingredient> requiredIngredients;
 
+	private BuyingPreference preference;
+
+	public BuyingPreference getPreference() {
+		return preference;
+	}
+
+	public void setPreference(BuyingPreference preference) {
+		this.preference = preference;
+	}
+
 	public ArrayList<Ingredient> getRequiredIngredients() {
 		return requiredIngredients;
 	}

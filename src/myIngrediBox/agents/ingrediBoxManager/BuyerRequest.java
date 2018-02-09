@@ -12,6 +12,7 @@ import jade.core.Agent;
 import jade.core.behaviours.DataStore;
 import jade.lang.acl.ACLMessage;
 import jade.proto.AchieveREInitiator;
+import myIngrediBox.ontologies.BuyingPreference;
 import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.ontologies.PurchasableIngredient;
 import myIngrediBox.ontologies.RequestBuyingAction;
@@ -41,21 +42,23 @@ public class BuyerRequest extends AchieveREInitiator {
 		requiredIngredients.add(new Ingredient("Apfelkompott", 0.1, Unit.Liter));
 		requiredIngredients.add(new Ingredient("Mehl", 0.5, Unit.Kilo));
 
-		// find InventoryManager(s)
+		// find IngrediBuyer(s)
 		ArrayList<AID> buyerAgents = (ArrayList<AID>) this.getDataStore().get("Ingredient-Buying-Service");
 		AID buyerAgent = buyerAgents.get(0);
 
 		request.setOntology(this.ibm.getOntology().getName());
 		request.setLanguage(this.ibm.getCodec().getName());
 		RequestBuyingAction requestBuyingAction = new RequestBuyingAction();
-		
-		if(!ibm.getShoppingList().isEmpty()) {
+
+		if (!ibm.getShoppingList().isEmpty()) {
 			requestBuyingAction.setRequiredIngredients(ibm.getShoppingList());
-		}
-		else {
-			//Set sample data
+		} else {
+			// Set sample data
 			requestBuyingAction.setRequiredIngredients(requiredIngredients);
 		}
+
+		// set buying preference
+		requestBuyingAction.setPreference(BuyingPreference.LOW_LEFTOVERS);
 
 		Action a = new Action(buyerAgent, requestBuyingAction);
 

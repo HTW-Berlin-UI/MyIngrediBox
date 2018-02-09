@@ -15,6 +15,7 @@ import jade.domain.FIPAAgentManagement.FailureException;
 import jade.lang.acl.ACLMessage;
 import jade.proto.AchieveREResponder;
 import jade.proto.ContractNetInitiator;
+import myIngrediBox.ontologies.BuyingPreference;
 import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.ontologies.PurchasableIngredient;
 import myIngrediBox.ontologies.RequestOffer;
@@ -39,8 +40,10 @@ public class GoShopping extends ContractNetInitiator {
 	@Override
 	public void onStart() {
 		super.onStart();
-		this.buyingController = BuyingControllerFactory.getInstance()
-				.createBuyingControllerFor(BuyingPreference.CHEAPEST);
+
+		BuyingPreference preference = (BuyingPreference) this.getDataStore().get("buyingPreference");
+
+		this.buyingController = BuyingControllerFactory.getInstance().createBuyingControllerFor(preference);
 	}
 
 	@Override
