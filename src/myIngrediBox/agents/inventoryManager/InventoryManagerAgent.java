@@ -39,14 +39,13 @@ public class InventoryManagerAgent extends Agent {
 
 	protected void setup() {
 		super.setup();
+		
 		// Register Service
 		RegisterServiceBehaviour registerServiceBehaviour = new RegisterServiceBehaviour(this,
 				"Inventory-Managing-Service");
 
 		this.getContentManager().registerLanguage(codec);
 		this.getContentManager().registerOntology(ontology);
-
-		// this.inventory = new ArrayList<Ingredient>();
 
 		// Load Inventory
 		ReadFromFile loadInventory = new ReadFromFile("assets/inventory/inventory.json");
@@ -59,18 +58,18 @@ public class InventoryManagerAgent extends Agent {
 		manageInventory.addSubBehaviour(registerServiceBehaviour);
 		manageInventory.addSubBehaviour(printIngredientBehaviour);		
 
+		// Set shared DataStore
 		loadInventory.setDataStore(manageInventory.getDataStore());
 		parseInventory.setDataStore(manageInventory.getDataStore());
 
-		AchieveREResponder.createMessageTemplate(FIPANames.InteractionProtocol.FIPA_REQUEST);
-		// react to message matching the template
+		// React to message matching the template
 		MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchConversationId("inventory-request"),
 				MessageTemplate.MatchOntology(ontology.getName()));
-		
+		// Receive ingredient request and response with sending availabe ingredients
 		RequestResponse requestResponse = new RequestResponse(this, mt);
 		
-		this.addBehaviour(requestResponse);
-		
+		manageInventory.addSubBehaviour(requestResponse);
+				
 		this.addBehaviour(manageInventory);
 
 	} // End setup()

@@ -19,7 +19,6 @@ public class ParseInventory extends OneShotBehaviour {
 
 	@Override
 	public void action() {
-		// TODO Auto-generated method stub
 
 		InventoryManagerAgent inventoryManager = (InventoryManagerAgent) this.getAgent();
 
@@ -36,7 +35,7 @@ public class ParseInventory extends OneShotBehaviour {
 
 			JSONObject rawIngredient = iterator.next();
 
-			// create inventory object
+			// Create inventory object
 			ingredient.setName(rawIngredient.get("name").toString());
 			ingredient.setQuantity(Double.parseDouble(rawIngredient.get("quantity").toString()));
 			ingredient.setUnit(Unit.valueOf(rawIngredient.get("unit").toString()));

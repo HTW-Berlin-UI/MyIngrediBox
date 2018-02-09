@@ -20,10 +20,9 @@ import jade.proto.AchieveREResponder;
 import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.ontologies.IngredientSendingAction;
 
+// Receive ingredient request, handle it and response with sending ingredients
 public class RequestResponse extends AchieveREResponder
 {
-
-	// receive AND responde with sending ingredients ??
 
 	private static final long serialVersionUID = 1L;
 	private InventoryManagerAgent inventoryManagerAgent;
@@ -37,25 +36,26 @@ public class RequestResponse extends AchieveREResponder
 	@Override
 	protected ACLMessage handleRequest(ACLMessage request) throws NotUnderstoodException, RefuseException
 	{
+		// Receive requested ingredients from IngrediBoxManager and check availability
+		// in inventory
 		ACLMessage response = request.createReply();
-		try // valid dateformat?
+		try // Catch if data format is not correct
 		{
 			ContentElement ce = null;
 
-			// ce will be instance of Action
+			// Extract the message content
 			ce = inventoryManagerAgent.getContentManager().extractContent(request);
 
-			// getContentObject() could receive Java Object, but not recommended cause not
-			// FIPA
-			// and if Agent not on Java platform
 			if (ce instanceof Action)
 			{
+				// Cast message content to Action
 				Action action = (Action) ce;
 				IngredientSendingAction ingredientRequestAction = (IngredientSendingAction) action.getAction();
+				// Extract message content to 'proper' ingredients
 				inventoryManagerAgent.setRequestedIngredients(ingredientRequestAction.getIngredients());
 				Iterator<Ingredient> iterator = ingredientRequestAction.getIngredients().iterator();
 
-				System.out.println("\nIM received request for: ");
+				System.out.println("\nInventoryManager received request for: ");
 				while (iterator.hasNext())
 				{
 					Ingredient ingredient = iterator.next();
@@ -80,22 +80,21 @@ public class RequestResponse extends AchieveREResponder
 	@Override
 	protected ACLMessage prepareResultNotification(ACLMessage request, ACLMessage response) throws FailureException
 	{
+		// Response to IngrediBoxManager and send ingredients if available
 		response = request.createReply();
-		//for testing refuse-case
-//		inventoryManagerAgent.getAvailableRequestedIngredients().clear();
+
 		if (request.getContent() != null)
 		{
 			if (!inventoryManagerAgent.getAvailableRequestedIngredients().isEmpty())
 			{
-				
+
 				// Send available ingredients to IBM
 				IngredientSendingAction sendAvailableIngredientsAction = new IngredientSendingAction();
-				sendAvailableIngredientsAction
-						.setIngredients(inventoryManagerAgent.getAvailableRequestedIngredients());
+				sendAvailableIngredientsAction.setIngredients(inventoryManagerAgent.getAvailableRequestedIngredients());
 				sendAvailableIngredientsAction.setAgent(inventoryManagerAgent.getAID());
 
 				response.setPerformative(ACLMessage.INFORM);
-				
+
 				try
 				{
 					Action responseAction = new Action(this.getAgent().getAID(), sendAvailableIngredientsAction);
@@ -105,15 +104,15 @@ public class RequestResponse extends AchieveREResponder
 					e.printStackTrace();
 				}
 			}
-			
-			else {
+
+			else
+			{
 				response.setPerformative(ACLMessage.REFUSE);
-				response.setContent("Non of the requested ingredients is available :(");	
+				response.setContent("Non of the requested ingredients is available :(");
 			}
 
 		}
 		return response;
 	}
-	
 
 }

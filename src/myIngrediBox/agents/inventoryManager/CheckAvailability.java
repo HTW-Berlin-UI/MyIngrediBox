@@ -11,9 +11,9 @@ import myIngrediBox.ontologies.Ingredient;
 public class CheckAvailability extends OneShotBehaviour
 {
 	private static final long serialVersionUID = 1L;
-	
+
 	private InventoryManagerAgent inventoryManagerAgent;
-	private ArrayList<Ingredient> inventory= new ArrayList<>();
+	private ArrayList<Ingredient> inventory = new ArrayList<>();
 	private ArrayList<Ingredient> requestedIngredients = new ArrayList<>();
 	private ArrayList<Ingredient> availableIngredients = new ArrayList<>();
 
@@ -29,9 +29,10 @@ public class CheckAvailability extends OneShotBehaviour
 		this.requestedIngredients = inventoryManagerAgent.getRequestedIngredients();
 
 		Iterator<Ingredient> requestIterator = requestedIngredients.iterator();
-		
-		// check availability in inventory of requested ingredients
-		if (!Collections.disjoint(inventory, requestedIngredients)) {
+
+		// Check availability of requested ingredients
+		if (!Collections.disjoint(inventory, requestedIngredients))
+		{
 			System.out.println("Yes, I have");
 		}
 		while (requestIterator.hasNext())
@@ -40,7 +41,7 @@ public class CheckAvailability extends OneShotBehaviour
 
 			if (inventory.contains(requestIngredient))
 			{
-				
+
 				System.out.println("- " + requestIngredient.getName() + "\tQuantity: "
 						+ inventory.get(inventory.indexOf(requestIngredient)).getQuantity()
 						+ inventory.get(inventory.indexOf(requestIngredient)).getUnit());
@@ -51,7 +52,7 @@ public class CheckAvailability extends OneShotBehaviour
 
 				boolean haveSameUnit = inventoryIngredient.getUnit().equals(requestIngredient.getUnit());
 
-				// set remaining quantity of request and inventory ingredient
+				// Set remaining quantity of request and inventory ingredient
 				if (haveSameUnit)
 				{
 					if (inventoryIngredient.getQuantity() > requestIngredient.getQuantity())
@@ -65,24 +66,23 @@ public class CheckAvailability extends OneShotBehaviour
 						inventory.remove(indexI);
 					} else if (inventoryIngredient.getQuantity() < requestIngredient.getQuantity())
 					{
-						requestIngredient
-								.setQuantity(requestIngredient.getQuantity() - inventoryIngredient.getQuantity());
 						inventory.remove(indexI);
 						availableIngredients.add(inventoryIngredient);
 					}
 				}
-			} else
+			} else // Case if requested ingredient isn't available
 			{
 				System.out.println("No, I don't have " + requestIngredient.getName());
 				// requestIngredient-quantity remains the same
 			}
 		}
-		
-		//Update IM's inventory
+
+		// Update IM's inventory
 		inventoryManagerAgent.setInventory(this.inventory);
-		//Set ingredients to pass to IBM
+
+		// Set ingredients to pass to IBM
 		inventoryManagerAgent.setAvailableRequestedIngredients(availableIngredients);
-	
+
 		printList(inventory, "Updated Inventory");
 	}
 
