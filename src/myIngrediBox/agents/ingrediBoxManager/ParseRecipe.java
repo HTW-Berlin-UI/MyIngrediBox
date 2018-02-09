@@ -29,6 +29,8 @@ public class ParseRecipe extends OneShotBehaviour
 		JSONObject rawData = (JSONObject) this.getDataStore().get("rawData");
 
 		JSONArray recipe = (JSONArray) rawData.get("ingredients");
+		//For parsing pure JSON Array
+		//JSONArray recipe = (JSONArray) this.getDataStore().get("rawData");
 		
 		ArrayList<Ingredient> tempRecipe = new ArrayList<Ingredient>();
 
