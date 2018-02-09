@@ -1,53 +1,25 @@
 package myIngrediBox.agents.marketManager;
 
-import java.util.ArrayList;
-
-import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
-import jade.content.onto.Ontology;
 import jade.core.Agent;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.FIPANames;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.ContractNetResponder;
 import myIngrediBox.ontologies.IngrediBoxOntology;
-import myIngrediBox.ontologies.PurchasableIngredient;
 import myIngrediBox.shared.behaviours.ReadFromFile;
 import myIngrediBox.shared.behaviours.RegisterServiceBehaviour;
 
 public class MarketManager extends Agent {
-	/**
-	 * message language FIPA-SL
-	 */
-	private Codec codec = new SLCodec();
 
-	/**
-	 * ontology used for semantic parsing
-	 */
-	private Ontology ontology = IngrediBoxOntology.getInstance();
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-
-	/**
-	 * ontology used for semantic parsing
-	 */
-	private ArrayList<PurchasableIngredient> stock;
-
-	public ArrayList<PurchasableIngredient> getStock() {
-		return stock;
-	}
-
-	public void setStock(ArrayList<PurchasableIngredient> stock) {
-		this.stock = stock;
-	}
 
 	@Override
 	protected void setup() {
 		super.setup();
-		System.out.println(this.getLocalName() + " started.");
+
+		// agent local name must match json filename
+		String stockFilePath = "assets/stocks/" + this.getLocalName() + ".json";
 
 		// Register Service
 		RegisterServiceBehaviour registerServiceBehaviour = new RegisterServiceBehaviour(this,
@@ -55,8 +27,8 @@ public class MarketManager extends Agent {
 		this.addBehaviour(registerServiceBehaviour);
 
 		// Adjust ContentManager to ontology and codec
-		this.getContentManager().registerLanguage(this.codec);
-		this.getContentManager().registerOntology(ontology);
+		this.getContentManager().registerLanguage(new SLCodec());
+		this.getContentManager().registerOntology(IngrediBoxOntology.getInstance());
 
 		/*
 		 * first read json -> than parse stock -> than register service -> than listen
@@ -65,22 +37,18 @@ public class MarketManager extends Agent {
 		SequentialBehaviour manageStockThanTrade = new SequentialBehaviour();
 
 		// read stock json
-		// agent local name must match json filename
-		ReadFromFile loadStock = new ReadFromFile("assets/stocks/" + this.getLocalName() + ".json");
+		ReadFromFile loadStock = new ReadFromFile(stockFilePath, manageStockThanTrade.getDataStore());
 		manageStockThanTrade.addSubBehaviour(loadStock);
-		loadStock.setDataStore(manageStockThanTrade.getDataStore());
 
 		// parse stock
-		ParseStock parseStock = new ParseStock();
+		ParseStock parseStock = new ParseStock(manageStockThanTrade.getDataStore());
 		manageStockThanTrade.addSubBehaviour(parseStock);
-		parseStock.setDataStore(manageStockThanTrade.getDataStore());
 
 		// serve buyer request
 		MessageTemplate mt = ContractNetResponder
 				.createMessageTemplate(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET);
-		ServeBuyer serveBuyer = new ServeBuyer(this, mt);
+		ServeBuyer serveBuyer = new ServeBuyer(this, mt, manageStockThanTrade.getDataStore());
 		manageStockThanTrade.addSubBehaviour(serveBuyer);
-		serveBuyer.setDataStore(manageStockThanTrade.getDataStore());
 
 		// add stock trading behaviour to agent
 		this.addBehaviour(manageStockThanTrade);

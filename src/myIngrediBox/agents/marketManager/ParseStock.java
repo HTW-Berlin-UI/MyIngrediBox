@@ -6,11 +6,17 @@ import java.util.Iterator;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import jade.core.behaviours.DataStore;
 import jade.core.behaviours.OneShotBehaviour;
 import myIngrediBox.ontologies.PurchasableIngredient;
 import myIngrediBox.ontologies.Unit;
 
 public class ParseStock extends OneShotBehaviour {
+
+	public ParseStock(DataStore datastore) {
+		super();
+		this.setDataStore(datastore);
+	}
 
 	/**
 	 * 
@@ -27,7 +33,7 @@ public class ParseStock extends OneShotBehaviour {
 
 		JSONArray inventory = (JSONArray) rawData.get("inventory");
 
-		ArrayList<PurchasableIngredient> tempIngredients = new ArrayList<PurchasableIngredient>();
+		ArrayList<PurchasableIngredient> stock = new ArrayList<PurchasableIngredient>();
 
 		Iterator<JSONObject> iterator = inventory.iterator();
 		while (iterator.hasNext()) {
@@ -42,11 +48,11 @@ public class ParseStock extends OneShotBehaviour {
 			ingredient.setUnit(Unit.valueOf(rawIngredient.get("unit").toString()));
 			ingredient.setPrice(Double.parseDouble(rawIngredient.get("price").toString()));
 
-			tempIngredients.add(ingredient);
+			stock.add(ingredient);
 
 		}
 
-		marketManager.setStock(tempIngredients);
+		this.getDataStore().put("stock", stock);
 
 	}
 

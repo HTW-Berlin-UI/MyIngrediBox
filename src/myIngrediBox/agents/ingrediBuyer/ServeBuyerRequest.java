@@ -28,12 +28,13 @@ public class ServeBuyerRequest extends AchieveREResponder {
 
 			this.getDataStore().put("requiredIngredients", requestBuyingAction.getRequiredIngredients());
 
+			response.setPerformative(ACLMessage.AGREE);
+
 		} catch (Exception e) {
 			response.setPerformative(ACLMessage.NOT_UNDERSTOOD);
 			throw new NotUnderstoodException(response);
 		}
 
-		response.setPerformative(ACLMessage.AGREE);
 		return response;
 	}
 
