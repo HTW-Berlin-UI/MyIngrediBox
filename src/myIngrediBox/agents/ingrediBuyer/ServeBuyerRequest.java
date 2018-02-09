@@ -2,9 +2,7 @@ package myIngrediBox.agents.ingrediBuyer;
 
 import jade.content.onto.basic.Action;
 import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.DataStore;
-import jade.domain.FIPAAgentManagement.FailureException;
 import jade.domain.FIPAAgentManagement.NotUnderstoodException;
 import jade.domain.FIPAAgentManagement.RefuseException;
 import jade.lang.acl.ACLMessage;
@@ -24,6 +22,7 @@ public class ServeBuyerRequest extends AchieveREResponder {
 		ACLMessage response = request.createReply();
 		try {
 
+			// ingrediBoxManage got new ingredients to buy
 			Action a = (Action) this.myAgent.getContentManager().extractContent(request);
 			RequestBuyingAction requestBuyingAction = (RequestBuyingAction) a.getAction();
 
@@ -36,30 +35,6 @@ public class ServeBuyerRequest extends AchieveREResponder {
 
 		response.setPerformative(ACLMessage.AGREE);
 		return response;
-	}
-
-	@Override
-	protected ACLMessage prepareResultNotification(ACLMessage request, ACLMessage response) throws FailureException {
-
-		try {
-
-			if (response == null) {
-				response = request.createReply();
-			}
-			response.setPerformative(ACLMessage.INFORM);
-
-		} catch (Exception e) {
-			// setPerformativ = Failure, setContent error-message
-			throw new FailureException(response);
-		}
-
-		return response;
-	}
-
-	@Override
-	public void registerPrepareResultNotification(Behaviour b) {
-		// TODO Auto-generated method stub
-		super.registerPrepareResultNotification(b);
 	}
 
 }

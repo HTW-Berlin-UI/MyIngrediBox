@@ -96,7 +96,7 @@ public class GoShopping extends ContractNetInitiator {
 			Action a = (Action) this.myAgent.getContentManager().extractContent(propose);
 			TradeIngredients tradeIngredients = (TradeIngredients) a.getAction();
 
-			// this is where to decide what to buy
+			// inform buying controller about this offer
 			ArrayList<PurchasableIngredient> proposedIngredients = tradeIngredients.getIngredients();
 			if (!proposedIngredients.isEmpty()) {
 
@@ -147,7 +147,7 @@ public class GoShopping extends ContractNetInitiator {
 
 					this.getAgent().getContentManager().fillContent(reply, responseAction);
 				} catch (CodecException | OntologyException e) {
-					// TODO Auto-generated catch block
+
 					e.printStackTrace();
 				}
 			}
@@ -195,7 +195,7 @@ public class GoShopping extends ContractNetInitiator {
 
 	@Override
 	protected void handleAllResultNotifications(Vector resultNotifications) {
-		// at this stage the trades have finished.
+		// at this stage the trading has finished.
 		// override behaviour of parent AchieveREResponder method ->
 		// prepareResultNotification
 
@@ -223,8 +223,8 @@ public class GoShopping extends ContractNetInitiator {
 			this.getAgent().getContentManager().fillContent(response, responseAction);
 
 		} catch (Exception e) {
-			// setPerformativ = Failure, setContent error-message
 			try {
+				response.setPerformative(ACLMessage.FAILURE);
 				throw new FailureException(response);
 			} catch (FailureException e1) {
 				// TODO Auto-generated catch block
