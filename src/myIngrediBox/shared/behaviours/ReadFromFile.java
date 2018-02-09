@@ -5,6 +5,7 @@ import java.io.FileReader;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import jade.core.behaviours.DataStore;
 import jade.core.behaviours.OneShotBehaviour;
 
 public class ReadFromFile extends OneShotBehaviour {
@@ -18,6 +19,11 @@ public class ReadFromFile extends OneShotBehaviour {
 	public ReadFromFile(String path) {
 		super();
 		this.path = path;
+	}
+
+	public ReadFromFile(String path, DataStore datastore) {
+		this(path);
+		this.setDataStore(datastore);
 	}
 
 	@Override

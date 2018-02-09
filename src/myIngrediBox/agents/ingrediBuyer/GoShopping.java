@@ -15,6 +15,8 @@ import jade.domain.FIPAAgentManagement.FailureException;
 import jade.lang.acl.ACLMessage;
 import jade.proto.AchieveREResponder;
 import jade.proto.ContractNetInitiator;
+import myIngrediBox.ontologies.BuyingPreference;
+import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.ontologies.PurchasableIngredient;
 import myIngrediBox.ontologies.RequestOffer;
 import myIngrediBox.ontologies.SendPurchase;
@@ -22,12 +24,11 @@ import myIngrediBox.ontologies.TradeIngredients;
 
 public class GoShopping extends ContractNetInitiator {
 
-	private IngrediBuyerAgent buyerAgent;
 	private BuyingController buyingController;
 
-	public GoShopping(Agent a, ACLMessage cfp) {
+	public GoShopping(Agent a, ACLMessage cfp, DataStore datastore) {
 		super(a, cfp);
-		this.buyerAgent = (IngrediBuyerAgent) a;
+		this.setDataStore(datastore);
 
 	}
 
@@ -39,18 +40,28 @@ public class GoShopping extends ContractNetInitiator {
 	@Override
 	public void onStart() {
 		super.onStart();
-		this.buyingController = BuyingControllerFactory.getInstance()
-				.createBuyingControllerFor(BuyingPreference.CHEAPEST);
+
+		BuyingPreference preference = (BuyingPreference) this.getDataStore().get("buyingPreference");
+
+		this.buyingController = BuyingControllerFactory.getInstance().createBuyingControllerFor(preference);
 	}
 
 	@Override
 	protected Vector prepareCfps(ACLMessage cfpTemplate) {
 		Vector marketsToCall = new Vector();
 
-		if (!this.buyerAgent.getRequiredIngredients().isEmpty()) {
-			cfpTemplate.setPerformative(ACLMessage.CFP);
-			cfpTemplate.setOntology(this.buyerAgent.getOntology().getName());
-			cfpTemplate.setLanguage(this.buyerAgent.getCodec().getName());
+		ArrayList<Ingredient> requiredIngredients = (ArrayList<Ingredient>) this.getDataStore()
+				.get("requiredIngredients");
+
+		if (!requiredIngredients.isEmpty()) {
+
+			String[] ontologies = this.getAgent().getContentManager().getOntologyNames();
+			String[] languages = this.getAgent().getContentManager().getLanguageNames();
+
+			if (ontologies[0] != null)
+				cfpTemplate.setOntology(ontologies[0]);
+			if (languages[0] != null)
+				cfpTemplate.setLanguage(languages[0]);
 
 			RequestOffer requestOffer = null;
 			ACLMessage cfp = null;
@@ -59,14 +70,14 @@ public class GoShopping extends ContractNetInitiator {
 			ArrayList<AID> markets = (ArrayList<AID>) this.getDataStore().get("Ingredient-Selling-Service");
 			for (AID market : markets) {
 				requestOffer = new RequestOffer();
-				requestOffer.setRequiredIngredients(this.buyerAgent.getRequiredIngredients());
-				requestOffer.setBuyer(this.buyerAgent.getAID());
+				requestOffer.setRequiredIngredients(requiredIngredients);
+				requestOffer.setBuyer(this.getAgent().getAID());
 
 				a = new Action(market, requestOffer);
 				cfp = (ACLMessage) cfpTemplate.clone();
 				cfp.addReceiver(market);
 				try {
-					this.myAgent.getContentManager().fillContent(cfp, a);
+					this.getAgent().getContentManager().fillContent(cfp, a);
 
 					marketsToCall.add(cfp);
 				} catch (CodecException e) {
@@ -88,7 +99,7 @@ public class GoShopping extends ContractNetInitiator {
 			Action a = (Action) this.myAgent.getContentManager().extractContent(propose);
 			TradeIngredients tradeIngredients = (TradeIngredients) a.getAction();
 
-			// this is where to decide what to buy
+			// inform buying controller about this offer
 			ArrayList<PurchasableIngredient> proposedIngredients = tradeIngredients.getIngredients();
 			if (!proposedIngredients.isEmpty()) {
 
@@ -133,13 +144,13 @@ public class GoShopping extends ContractNetInitiator {
 
 					TradeIngredients tradeIngredients = new TradeIngredients();
 					tradeIngredients.setIngredients(ingredientsToBuy);
-					tradeIngredients.setTrader(this.buyerAgent.getAID());
+					tradeIngredients.setTrader(this.getAgent().getAID());
 
 					Action responseAction = new Action(this.getAgent().getAID(), tradeIngredients);
 
-					this.buyerAgent.getContentManager().fillContent(reply, responseAction);
+					this.getAgent().getContentManager().fillContent(reply, responseAction);
 				} catch (CodecException | OntologyException e) {
-					// TODO Auto-generated catch block
+
 					e.printStackTrace();
 				}
 			}
@@ -187,12 +198,13 @@ public class GoShopping extends ContractNetInitiator {
 
 	@Override
 	protected void handleAllResultNotifications(Vector resultNotifications) {
-		// at this stage the trades have finished.
+		// at this stage the trading has finished.
 		// override behaviour of parent AchieveREResponder method ->
 		// prepareResultNotification
 
 		DataStore ds = getDataStore();
-		AchieveREResponder fsm = (AchieveREResponder) getParent();
+		// assuming that serveBuyerRequest behaviour is our root behaviour here
+		AchieveREResponder fsm = (AchieveREResponder) root();
 		ACLMessage request = (ACLMessage) ds.get(fsm.REQUEST_KEY);
 		ACLMessage response = (ACLMessage) ds.get(fsm.RESPONSE_KEY);
 
@@ -211,11 +223,11 @@ public class GoShopping extends ContractNetInitiator {
 
 			Action responseAction = new Action(this.getAgent().getAID(), sendPurchase);
 
-			this.myAgent.getContentManager().fillContent(response, responseAction);
+			this.getAgent().getContentManager().fillContent(response, responseAction);
 
 		} catch (Exception e) {
-			// setPerformativ = Failure, setContent error-message
 			try {
+				response.setPerformative(ACLMessage.FAILURE);
 				throw new FailureException(response);
 			} catch (FailureException e1) {
 				// TODO Auto-generated catch block

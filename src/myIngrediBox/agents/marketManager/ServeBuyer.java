@@ -7,6 +7,7 @@ import jade.content.onto.OntologyException;
 import jade.content.onto.UngroundedException;
 import jade.content.onto.basic.Action;
 import jade.core.Agent;
+import jade.core.behaviours.DataStore;
 import jade.domain.FIPAAgentManagement.FailureException;
 import jade.domain.FIPAAgentManagement.NotUnderstoodException;
 import jade.domain.FIPAAgentManagement.RefuseException;
@@ -20,16 +21,11 @@ import myIngrediBox.ontologies.TradeIngredients;
 
 public class ServeBuyer extends ContractNetResponder {
 
-	private MarketManager marketManager;
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
-	public ServeBuyer(Agent a, MessageTemplate mt) {
+	public ServeBuyer(Agent a, MessageTemplate mt, DataStore datastore) {
 		super(a, mt);
-		this.marketManager = (MarketManager) a;
-		// TODO Auto-generated constructor stub
+		this.setDataStore(datastore);
 	}
 
 	@Override
@@ -37,16 +33,18 @@ public class ServeBuyer extends ContractNetResponder {
 		ACLMessage proposal = cfp.createReply();
 		try {
 			// react to incoming offer
-			Action proposalAction = (Action) this.myAgent.getContentManager().extractContent(cfp);
+			Action proposalAction = (Action) this.getAgent().getContentManager().extractContent(cfp);
 			RequestOffer requestOffer = (RequestOffer) proposalAction.getAction();
 
 			// get the required ingredients list sent by buyer
 			ArrayList<Ingredient> requiredIngredients = requestOffer.getRequiredIngredients();
 
-			// assuming that we have an infinite stock, we don't operate on the markets
-			// stock object
-			ArrayList<PurchasableIngredient> availableIngredients = (ArrayList<PurchasableIngredient>) this.marketManager
-					.getStock().clone();
+			// get stock
+			ArrayList<PurchasableIngredient> stock = (ArrayList<PurchasableIngredient>) this.getDataStore()
+					.get("stock");
+
+			// assuming that our stock is infinite, we don't operate on its object reference
+			ArrayList<PurchasableIngredient> availableIngredients = (ArrayList<PurchasableIngredient>) stock.clone();
 
 			// check if the required ingredients are in stock
 			availableIngredients.retainAll(requiredIngredients);
@@ -66,7 +64,7 @@ public class ServeBuyer extends ContractNetResponder {
 
 				TradeIngredients tradeIngredients = new TradeIngredients();
 				tradeIngredients.setIngredients(availableIngredients);
-				tradeIngredients.setTrader(this.marketManager.getAID());
+				tradeIngredients.setTrader(this.getAgent().getAID());
 
 				Action responseAction = new Action(this.getAgent().getAID(), tradeIngredients);
 
@@ -97,15 +95,24 @@ public class ServeBuyer extends ContractNetResponder {
 	 * Ingredibuyer wants to buy some ingredients
 	 */
 	@Override
-	protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept)
-			throws FailureException {
+	protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept) {
 		ACLMessage response = accept.createReply();
+		try {
 
-		// now send ingredients back
-		// TODO update stock
-		response.setPerformative(ACLMessage.INFORM);
-		response.setContent(accept.getContent());
+			// now send ingredients back
+			// TODO update stock
+			response.setPerformative(ACLMessage.INFORM);
+			response.setContent(accept.getContent());
 
+		} catch (Exception e) {
+			try {
+				response.setPerformative(ACLMessage.FAILURE);
+				throw new FailureException(response);
+			} catch (FailureException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 		return response;
 	}
 

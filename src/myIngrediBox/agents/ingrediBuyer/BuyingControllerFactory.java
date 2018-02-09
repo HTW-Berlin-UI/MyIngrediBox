@@ -1,5 +1,7 @@
 package myIngrediBox.agents.ingrediBuyer;
 
+import myIngrediBox.ontologies.BuyingPreference;
+
 public class BuyingControllerFactory {
 
 	private static BuyingControllerFactory instance = new BuyingControllerFactory();
@@ -13,8 +15,10 @@ public class BuyingControllerFactory {
 		switch (preference) {
 		case CHEAPEST:
 			return new BuyCheapest();
+		case LOW_LEFTOVERS:
+			return new BuyLowLeftovers();
 		default:
-			throw new IllegalArgumentException("What exactly do you want to buy?");
+			return new BuyCheapest();
 		}
 
 	}
