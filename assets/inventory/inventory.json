@@ -10,13 +10,13 @@
             "name": "Salz",
             "type": "solid",
             "unit": "Kilo",
-            "quantity": 100
+            "quantity": 5
         },
         {
             "name": "Milch",
             "type": "liquid",
             "unit": "Liter",
-            "quantity": 1000
+            "quantity": 1
         },
         {
             "name": "Eier",
@@ -28,7 +28,7 @@
             "name": "Butterschmalz",
             "type": "solid",
             "unit": "Kilo",
-            "quantity": 250
+            "quantity": 1.5
         }
     ]
 }
