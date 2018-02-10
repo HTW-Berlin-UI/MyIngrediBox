@@ -65,7 +65,7 @@ public class InventoryManagerAgent extends Agent {
 		// React to message matching the template
 		MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchConversationId("inventory-request"),
 				MessageTemplate.MatchOntology(ontology.getName()));
-		// Receive ingredient request and response with sending availabe ingredients
+		// Receive ingredient request and response with sending available ingredients
 		RequestResponse requestResponse = new RequestResponse(this, mt);
 		
 		manageInventory.addSubBehaviour(requestResponse);
