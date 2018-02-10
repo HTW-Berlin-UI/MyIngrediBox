@@ -28,11 +28,6 @@ Apfelkompott|liquid|Liter|0.5
 	* The config-file is located as .launch file in the root directory
 * MyIngrediBox Project is now ready to start
 
-## Import your recipe
-to be written
-## Choose other buying preferences
-to be written
-
 ## External Frameworks and Libraries
 
 * JADE
