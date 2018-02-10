@@ -19,34 +19,29 @@ public class ParseInventory extends OneShotBehaviour {
 
 	@Override
 	public void action() {
-		// TODO Auto-generated method stub
-
-		InventoryManagerAgent inventoryManager = (InventoryManagerAgent) this.getAgent();
 
 		JSONObject rawData = (JSONObject) this.getDataStore().get("rawData");
 
-		JSONArray inventory = (JSONArray) rawData.get("inventory");
+		JSONArray jsonArrayinventory = (JSONArray) rawData.get("inventory");
 
-		ArrayList<Ingredient> tempIngredients = new ArrayList<Ingredient>();
+		ArrayList<Ingredient> inventory = new ArrayList<Ingredient>();
 
-		Iterator<JSONObject> iterator = inventory.iterator();
+		Iterator<JSONObject> iterator = jsonArrayinventory.iterator();
 		while (iterator.hasNext()) {
 
 			Ingredient ingredient = new Ingredient();
 
 			JSONObject rawIngredient = iterator.next();
 
-			// create inventory object
+			// Create inventory object
 			ingredient.setName(rawIngredient.get("name").toString());
 			ingredient.setQuantity(Double.parseDouble(rawIngredient.get("quantity").toString()));
 			ingredient.setUnit(Unit.valueOf(rawIngredient.get("unit").toString()));
 
-			tempIngredients.add(ingredient);
+			inventory.add(ingredient);
 
 		}
-
-		inventoryManager.setInventory(tempIngredients);
-
+		this.getDataStore().put("inventory", inventory);
 	}
 
 }

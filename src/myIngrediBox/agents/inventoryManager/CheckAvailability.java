@@ -1,106 +1,91 @@
 package myIngrediBox.agents.inventoryManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
-import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
 import myIngrediBox.ontologies.Ingredient;
 
-public class CheckAvailability extends OneShotBehaviour
-{
-	private static final long serialVersionUID = 1L;
+public class CheckAvailability extends OneShotBehaviour {
+    private static final long serialVersionUID = 1L;
+
+    public CheckAvailability() {
+	super();
+    }
+
+
+    @Override
+    public void action() {
+	ArrayList<Ingredient> inventory = (ArrayList<Ingredient>) this.getDataStore().get("inventory");
+	ArrayList<Ingredient> requestedIngredients = (ArrayList<Ingredient>) this.getDataStore().get("requestedIngredients");
+	ArrayList<Ingredient> availableIngredients = new ArrayList<>();
 	
-	private InventoryManagerAgent inventoryManagerAgent;
-	private ArrayList<Ingredient> inventory= new ArrayList<>();
-	private ArrayList<Ingredient> requestedIngredients = new ArrayList<>();
-	private ArrayList<Ingredient> availableIngredients = new ArrayList<>();
+	Iterator<Ingredient> requestIterator = requestedIngredients.iterator();
 
-	public CheckAvailability(Agent a)
-	{
-		this.inventoryManagerAgent = (InventoryManagerAgent) a;
+	// Check availability of requested ingredients
+	if (!Collections.disjoint(inventory, requestedIngredients)) {
+	    System.out.println("Yes, I have");
 	}
+	while (requestIterator.hasNext()) {
+	    Ingredient requestIngredient = (Ingredient) requestIterator.next();
 
-	@Override
-	public void action()
-	{
-		this.inventory = inventoryManagerAgent.getInventory();
-		this.requestedIngredients = inventoryManagerAgent.getRequestedIngredients();
+	    if (inventory.contains(requestIngredient)) {
 
-		Iterator<Ingredient> requestIterator = requestedIngredients.iterator();
+		System.out.println("- " + requestIngredient.getName() + "\tQuantity: "
+			+ inventory.get(inventory.indexOf(requestIngredient)).getQuantity()
+			+ inventory.get(inventory.indexOf(requestIngredient)).getUnit());
 
-		// check availability in inventory of requested ingredients
-		while (requestIterator.hasNext())
-		{
-			Ingredient requestIngredient = (Ingredient) requestIterator.next();
+		int indexI = inventory.indexOf(requestIngredient);
 
-			if (inventory.contains(requestIngredient))
-			{
-				System.out.println("Yes, I have " + requestIngredient.getName() + "\t Quantity: "
-						+ inventory.get(inventory.indexOf(requestIngredient)).getQuantity());
+		Ingredient inventoryIngredient = inventory.get(indexI);
 
-				int indexI = inventory.indexOf(requestIngredient);
+		boolean haveSameUnit = inventoryIngredient.getUnit().equals(requestIngredient.getUnit());
 
-				Ingredient inventoryIngredient = inventory.get(indexI);
-
-				boolean haveSameUnit = inventoryIngredient.getUnit().equals(requestIngredient.getUnit());
-
-				// set remaining quantity of request and inventory ingredient
-				if (haveSameUnit)
-				{
-					if (inventoryIngredient.getQuantity() > requestIngredient.getQuantity())
-					{
-						availableIngredients.add(requestIngredient);
-						inventory.get(indexI)
-								.setQuantity(inventoryIngredient.getQuantity() - requestIngredient.getQuantity());
-					} else if (inventoryIngredient.getQuantity() == requestIngredient.getQuantity())
-					{
-						availableIngredients.add(requestIngredient);
-						inventory.remove(indexI);
-					} else if (inventoryIngredient.getQuantity() < requestIngredient.getQuantity())
-					{
-						requestIngredient
-								.setQuantity(requestIngredient.getQuantity() - inventoryIngredient.getQuantity());
-						inventory.remove(indexI);
-						availableIngredients.add(requestIngredient);
-					}
-				}
-			} else
-			{
-				System.out.println("No, I don't have " + requestIngredient.getName());
-				// requestIngredient-quantity remains the same
-			}
+		// Set remaining quantity of request and inventory ingredient
+		if (haveSameUnit) {
+		    if (inventoryIngredient.getQuantity() > requestIngredient.getQuantity()) {
+			availableIngredients.add(requestIngredient);
+			inventory.get(indexI)
+				.setQuantity(inventoryIngredient.getQuantity() - requestIngredient.getQuantity());
+		    } else if (inventoryIngredient.getQuantity() == requestIngredient.getQuantity()) {
+			availableIngredients.add(requestIngredient);
+			inventory.remove(indexI);
+		    } else if (inventoryIngredient.getQuantity() < requestIngredient.getQuantity()) {
+			inventory.remove(indexI);
+			availableIngredients.add(inventoryIngredient);
+		    }
 		}
-		
-		//Update IM's inventory
-		inventoryManagerAgent.setInventory(this.inventory);
-		//Set ingredients to pass to IBM
-		inventoryManagerAgent.setAvailableRequestedIngredients(availableIngredients);
-	
-		printList(inventory, "Updated Inventory");
+	    } else // Case if requested ingredient isn't available
+	    {
+		System.out.println("No, I don't have " + requestIngredient.getName());
+		// requestIngredient-quantity remains the same
+	    }
 	}
 
-	@Override
-	public void reset()
-	{
-		super.reset();
-		inventoryManagerAgent = null;
-		inventory = null;
-		requestedIngredients = null;
-		availableIngredients = null;
+	// Update IM's inventory
+	this.getDataStore().put("inventory", inventory);
+
+	// Set ingredients to pass to IBM
+	this.getDataStore().put("availableIngredients", availableIngredients);
+
+	printList(inventory, "Updated Inventory");
+    }
+
+    @Override
+    public void reset() {
+	super.reset();
+    }
+
+    public void printList(ArrayList<Ingredient> list, String listname) {
+	System.out.println("\n" + listname + ":");
+
+	for (Ingredient ingredient : list) {
+	    System.out.print(ingredient.getName() + "\t");
+	    System.out.print(ingredient.getQuantity() + "\t");
+	    System.out.println(ingredient.getUnit());
 	}
 
-	public void printList(ArrayList<Ingredient> list, String listname)
-	{
-		System.out.println("\n" + listname + ":");
-
-		for (Ingredient ingredient : list)
-		{
-			System.out.print(ingredient.getName() + "\t");
-			System.out.print(ingredient.getQuantity() + "\t");
-			System.out.println(ingredient.getUnit());
-		}
-
-	}
+    }
 
 }
