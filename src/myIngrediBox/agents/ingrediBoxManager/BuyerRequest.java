@@ -30,17 +30,22 @@ public class BuyerRequest extends AchieveREInitiator {
      */
     private static final long serialVersionUID = 1L;
 
+    // Requests a BuyerAgent and hands the shoppingList to BuyerAgent
+    // than also informs BuyerAgent, according which preferences to shop (e. g. lowest cost, lowest leftovers)
+    // than receives bought ingredients from BuyerAgent (if shopping went successfully) 
+    
     protected Vector prepareRequests(ACLMessage request) {
 	Vector v = new Vector();
 
+	// Get shoppingList form DataStore and instantiate local variable shoppingList
 	ArrayList<Ingredient> shoppingList = (ArrayList<Ingredient>) this.getDataStore().get("shoppingList");
-	// sample data
+	// Sample data
 	ArrayList<Ingredient> requiredIngredients = new ArrayList<Ingredient>();
 	requiredIngredients.add(new Ingredient("Vanille", 1, Unit.Piece));
 	requiredIngredients.add(new Ingredient("Apfelkompott", 0.1, Unit.Liter));
 	requiredIngredients.add(new Ingredient("Mehl", 0.5, Unit.Kilo));
 
-	// find IngrediBuyer(s)
+	// Find IngrediBuyer(s)
 	ArrayList<AID> buyerAgents = (ArrayList<AID>) this.getDataStore().get("Ingredient-Buying-Service");
 	AID buyerAgent = buyerAgents.get(0);
 
@@ -61,7 +66,7 @@ public class BuyerRequest extends AchieveREInitiator {
 	    requestBuyingAction.setRequiredIngredients(requiredIngredients);
 	}
 
-	// set buying preference
+	// Set buying preference
 	requestBuyingAction.setPreference(BuyingPreference.LOW_LEFTOVERS);
 
 	Action a = new Action(buyerAgent, requestBuyingAction);

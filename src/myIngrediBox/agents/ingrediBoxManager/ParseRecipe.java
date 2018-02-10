@@ -15,7 +15,8 @@ public class ParseRecipe extends OneShotBehaviour
 {
 
 	/**
-	 * 
+	 * Fetches a recipe from DataStore, which was imported and stored in DataStore by ReadFromFile
+	 * and stores the recipe in DataSore of associated Agent
 	 */
 	private static final long serialVersionUID = 1L;
 

@@ -20,6 +20,9 @@ public class IngrediBoxManagerAgent extends Agent {
     protected void setup() {
 	super.setup();
 
+	// Initialize behaviour to manage recipe
+	SequentialBehaviour manageRecipe = new SequentialBehaviour();
+
 	this.getContentManager().registerLanguage(new SLCodec());
 	this.getContentManager().registerOntology(IngrediBoxOntology.getInstance());
 
@@ -28,7 +31,6 @@ public class IngrediBoxManagerAgent extends Agent {
 	ParseRecipe parseRecipe = new ParseRecipe();
 	PrintRecipeIngredientList printRecipeIngredientBehaviour = new PrintRecipeIngredientList();
 
-	SequentialBehaviour manageRecipe = new SequentialBehaviour();
 	loadRecipe.setDataStore(manageRecipe.getDataStore());
 	parseRecipe.setDataStore(manageRecipe.getDataStore());
 	printRecipeIngredientBehaviour.setDataStore(manageRecipe.getDataStore());

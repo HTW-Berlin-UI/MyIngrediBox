@@ -32,7 +32,9 @@ public class InventoryRequest extends AchieveREInitiator {
     }
 
     /**
-     * prepares the ACLMessage for Requesting Ingredients
+     * Sends a request about available ingredients to the InventoryManagerAgent according the recipe ingredients
+     * than receives the available Ingredients, if Inventory-Service is available
+     * and if available ingredients were found
      */
     @Override
     protected Vector prepareRequests(ACLMessage request) {
@@ -46,7 +48,7 @@ public class InventoryRequest extends AchieveREInitiator {
 	    ingredientRequestAction.setIngredients(requestedIngredientList);
 	    ingredientRequestAction.setAgent(this.getAgent().getAID());
 
-	    // find InventoryManager(s)
+	    // Find InventoryManager(s)
 	    ArrayList<AID> inventoryManagers = (ArrayList<AID>) this.getDataStore().get("Inventory-Managing-Service");
 
 	    Action requestIngredientsAction = new Action(inventoryManagers.get(0), ingredientRequestAction);

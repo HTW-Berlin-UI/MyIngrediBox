@@ -16,6 +16,8 @@ public class CreateShoppingList extends OneShotBehaviour {
 	super();
     }
 
+    
+    // Creates shoppingList, which contains ingredients unavailable from inventory
     @Override
     public void action() {
 
@@ -27,7 +29,7 @@ public class CreateShoppingList extends OneShotBehaviour {
 	Iterator<Ingredient> recipeIterator = recipe.iterator();
 
 	if (!availableIngredientList.isEmpty()) {
-	    // check order necessity
+	    // Check order necessity
 	    while (recipeIterator.hasNext()) {
 		Ingredient recipeIngredient = (Ingredient) recipeIterator.next();
 
@@ -40,22 +42,18 @@ public class CreateShoppingList extends OneShotBehaviour {
 
 			boolean haveSameUnit = recipeIngredient.getUnit().equals(availableIngredient.getUnit());
 
-			// set remaining quantity of request and inventory ingredient
+			// Set remaining quantity of request and inventory ingredient
 			if (haveSameUnit) {
 			    if (recipeIngredient.getQuantity() > availableIngredient.getQuantity()) {
 				recipe.get(indexRp).setQuantity(
 					recipeIngredient.getQuantity() - availableIngredient.getQuantity());
 				shoppingList.add(recipeIngredient);
 			    }
-			    // else if (recipeIngredient.getQuantity() == availableIngredient.getQuantity())
-			    // {
-			    // recipeIterator.remove();
-			    // }
 			}
 		    }
 		}
 
-		// add ingredi's to shoppinglist, which weren't available from inventory
+		// Add ingredi's to shoppinglist, which weren't available from inventory
 		else {
 		    shoppingList.add(recipeIngredient);
 		}
