@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
-import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
 import myIngrediBox.ontologies.Ingredient;
 
