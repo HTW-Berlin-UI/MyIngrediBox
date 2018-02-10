@@ -24,25 +24,14 @@ public class IngrediBoxManagerAgent extends Agent {
 	private ArrayList<Ingredient> shoppingList = new ArrayList<>();
 	private ArrayList<Ingredient> availableIngredientList = new ArrayList<>();
 
-
-	/**
-	 * message language FIPA-SL
-	 */
-	private Codec codec = new SLCodec();
-
-	/**
-	 * ontology used for semantic parsing
-	 */
-	private Ontology ontology = IngrediBoxOntology.getInstance();
-
 	@Override
 	protected void setup() {
 		super.setup();
 
 		this.recipe = new ArrayList<Ingredient>();
 
-		this.getContentManager().registerLanguage(codec);
-		this.getContentManager().registerOntology(ontology);
+		this.getContentManager().registerLanguage(new SLCodec());
+		this.getContentManager().registerOntology(IngrediBoxOntology.getInstance());
 
 		// Load Recipe
 		ReadFromFile loadRecipe = new ReadFromFile("assets/recipes/EierkuchenSpezial.json");
@@ -128,21 +117,6 @@ public class IngrediBoxManagerAgent extends Agent {
 		return recipe;
 	}
 
-	public Ontology getOntology() {
-		return ontology;
-	}
-
-	public void setOntology(Ontology ontology) {
-		this.ontology = ontology;
-	}
-
-	public Codec getCodec() {
-		return codec;
-	}
-
-	public void setCodec(Codec codec) {
-		this.codec = codec;
-	}
 	
 	public ArrayList<Ingredient> getShoppingList()
 	{
