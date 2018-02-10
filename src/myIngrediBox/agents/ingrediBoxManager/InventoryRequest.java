@@ -13,6 +13,7 @@ import jade.content.onto.UngroundedException;
 import jade.content.onto.basic.Action;
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.DataStore;
 import jade.domain.FIPANames;
 import jade.domain.FIPAAgentManagement.NotUnderstoodException;
 import jade.lang.acl.ACLMessage;
@@ -24,29 +25,22 @@ import myIngrediBox.ontologies.RequestOffer;
 
 public class InventoryRequest extends AchieveREInitiator {
 
-    ArrayList<Ingredient> requestedIngredientList;
-    ArrayList<Ingredient> availableIngredientList;
-    ArrayList<Ingredient> shoppingList;
-
-    private IngrediBoxManagerAgent ingrediBoxManagerAgent;
-
     private static final long serialVersionUID = 1L;
 
-    public InventoryRequest(Agent a, ACLMessage msg) {
-	super(a, msg);
-	this.ingrediBoxManagerAgent = (IngrediBoxManagerAgent) a;
+    public InventoryRequest(Agent a, ACLMessage msg, DataStore store) {
+	super(a, msg, store);
     }
 
     /**
-     * prepares the ACLMessage(s) for Requesting Ingredients
+     * prepares the ACLMessage for Requesting Ingredients
      */
     @Override
     protected Vector prepareRequests(ACLMessage request) {
 	Vector v = new Vector();
 
-	this.requestedIngredientList = ingrediBoxManagerAgent.getRecipe();
+	ArrayList<Ingredient> requestedIngredientList = (ArrayList<Ingredient>) this.getDataStore().get("recipe");
 
-	if (!this.requestedIngredientList.isEmpty()) {
+	if (!requestedIngredientList.isEmpty()) {
 	    // Request the ingredients from the recipe at InventoryManager
 	    IngredientSendingAction ingredientRequestAction = new IngredientSendingAction();
 	    ingredientRequestAction.setIngredients(requestedIngredientList);
@@ -95,24 +89,21 @@ public class InventoryRequest extends AchieveREInitiator {
     @Override
     protected void handleInform(ACLMessage inform) {
 
+	// System.out.println(inform.getContent());
+
 	ContentElement ce = null;
 
-	// ce will be instance of Action
 	try {
 
 	    ce = this.myAgent.getContentManager().extractContent(inform);
 
-	    // and if Agent not on Java platform
 	    if (ce instanceof Action) {
 		Action action = (Action) ce;
 		IngredientSendingAction availableIngredientReceivingAction = (IngredientSendingAction) action
 			.getAction();
-		ingrediBoxManagerAgent.setAvailableIngredientList(availableIngredientReceivingAction.getIngredients());
 
-		availableIngredientList = availableIngredientReceivingAction.getIngredients();
-
-		// share availableIngredientList with DataStore
-		this.getDataStore().put("availableIngredientList", availableIngredientList);
+		// Share availableIngredients with DataStore
+		this.getDataStore().put("availableIngredients", availableIngredientReceivingAction.getIngredients());
 
 	    }
 	} catch (UngroundedException e) {
@@ -129,11 +120,10 @@ public class InventoryRequest extends AchieveREInitiator {
     }
 
     /**
-     * Responder doesnt want to play with us
+     * If InventoryManager refuses the request
      */
     @Override
     protected void handleRefuse(ACLMessage refuse) {
-	System.out.println(refuse);
 
 	ContentElement ce = null;
 	try {
@@ -148,36 +138,13 @@ public class InventoryRequest extends AchieveREInitiator {
 
 	if (ce != null) {
 	    try {
-		// NOT in combination with our Predicate InCatalogue tells us
-		// LibAgent does not know book => in RL stop querying
-		AbsPredicate ap = (AbsPredicate) ce;
-		if (ap.getTypeName().equalsIgnoreCase(SLVocabulary.NOT)) {
-
-		    // try
-		    // {
-		    // InCatalogue ic = (InCatalogue) ontology.toObject( ap.getAbsObject(
-		    // SLVocabulary.NOT_WHAT ) );
-		    // System.out.println( "UserAgent: "+ ic.getCatalogueAgent().getLocalName()
-		    // +" does not know: " + ic.getBook().getTitel() );
-		    // System.out.println("TryBlock in InventoryRequest line 170 called");
-		    // }
-		    // catch (UngroundedException e)
-		    // {
-		    // e.printStackTrace();
-		    // }
-		    // catch (OntologyException e)
-		    // {
-		    // e.printStackTrace();
-		    // }
-
-		}
-
+		System.out.println("\nRefuse " + ce.toString());
 	    } catch (ClassCastException cce2) {
 		System.out.println("\nRefuse not understood: " + ce);
 	    }
 
 	} else {
-	    System.out.println("\nRefuse with empty Content: " + refuse);
+	    System.out.println("\nRefuse with empty Content: " + refuse.getContent());
 	}
 
     }

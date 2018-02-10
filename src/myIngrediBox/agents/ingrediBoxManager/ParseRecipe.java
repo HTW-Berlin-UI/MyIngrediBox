@@ -22,10 +22,7 @@ public class ParseRecipe extends OneShotBehaviour
 	@Override
 	public void action()
 	{
-		// TODO Auto-generated method stub
 		
-		IngrediBoxManagerAgent ingrediBoxManagerAgent =  (IngrediBoxManagerAgent) this.getAgent();
-
 		JSONObject rawData = (JSONObject) this.getDataStore().get("rawData");
 
 		JSONArray recipe = (JSONArray) rawData.get("ingredients");
@@ -47,7 +44,7 @@ public class ParseRecipe extends OneShotBehaviour
 			tempRecipe.add(ingredient);
 		}
 
-		ingrediBoxManagerAgent.setRecipe(tempRecipe);
+		this.getDataStore().put("recipe", tempRecipe);
 	}
 
 }

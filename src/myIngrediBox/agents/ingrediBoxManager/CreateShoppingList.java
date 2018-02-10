@@ -7,94 +7,81 @@ import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
 import myIngrediBox.ontologies.Ingredient;
 
-public class CreateShoppingList extends OneShotBehaviour
-{
+public class CreateShoppingList extends OneShotBehaviour {
 
-	private static final long serialVersionUID = 1L;
-	private IngrediBoxManagerAgent ingrediBoxManagerAgent;
+    private static final long serialVersionUID = 1L;
 
-	public CreateShoppingList(Agent a)
-	{
-		super();
-		this.ingrediBoxManagerAgent = (IngrediBoxManagerAgent) a;
-	}
 
-	@Override
-	public void action()
-	{
-			
-		ArrayList<Ingredient> availableIngredientList = ingrediBoxManagerAgent.getAvailableIngredientList();
-		ArrayList<Ingredient> shoppingList = ingrediBoxManagerAgent.getShoppingList();
-		ArrayList<Ingredient> recipe = ingrediBoxManagerAgent.getRecipe();
+    public CreateShoppingList() {
+	super();
+    }
 
-		Iterator<Ingredient> availableIngredientIterator = availableIngredientList.iterator();
-		Iterator<Ingredient> recipeIterator = recipe.iterator();
+    @Override
+    public void action() {
 
-		if (!availableIngredientList.isEmpty())
-		{
-			// check order necessity
-			while (recipeIterator.hasNext())
-			{
-				Ingredient recipeIngredient = (Ingredient) recipeIterator.next();
+	ArrayList<Ingredient> availableIngredientList = (ArrayList<Ingredient>) this.getDataStore().get("availableIngredients");
+	ArrayList<Ingredient> shoppingList = new ArrayList<>();
+	ArrayList<Ingredient> recipe = (ArrayList<Ingredient>) this.getDataStore().get("recipe");
 
-				if (availableIngredientIterator.hasNext())
-				{
-					Ingredient availableIngredient = (Ingredient) availableIngredientIterator.next();
+	Iterator<Ingredient> availableIngredientIterator = availableIngredientList.iterator();
+	Iterator<Ingredient> recipeIterator = recipe.iterator();
 
-					if (availableIngredientList.contains(recipeIngredient))
-					{
+	if (!availableIngredientList.isEmpty()) {
+	    // check order necessity
+	    while (recipeIterator.hasNext()) {
+		Ingredient recipeIngredient = (Ingredient) recipeIterator.next();
 
-						int indexRp = recipe.indexOf(availableIngredient);
+		if (availableIngredientIterator.hasNext()) {
+		    Ingredient availableIngredient = (Ingredient) availableIngredientIterator.next();
 
-						boolean haveSameUnit = recipeIngredient.getUnit().equals(availableIngredient.getUnit());
+		    if (availableIngredientList.contains(recipeIngredient)) {
 
-						// set remaining quantity of request and inventory ingredient
-						if (haveSameUnit)
-						{
-							if (recipeIngredient.getQuantity() > availableIngredient.getQuantity())
-							{
-								recipe.get(indexRp).setQuantity(
-										recipeIngredient.getQuantity() - availableIngredient.getQuantity());
-								shoppingList.add(recipeIngredient);
-							} 
-//							else if (recipeIngredient.getQuantity() == availableIngredient.getQuantity())
-//							{
-//								recipeIterator.remove();
-//							}
-						}
-					}
-				}
+			int indexRp = recipe.indexOf(availableIngredient);
 
-				// add ingredi's to shoppinglist, which weren't available from inventory
-				else
-				{
-					shoppingList.add(recipeIngredient);
-				}
+			boolean haveSameUnit = recipeIngredient.getUnit().equals(availableIngredient.getUnit());
+
+			// set remaining quantity of request and inventory ingredient
+			if (haveSameUnit) {
+			    if (recipeIngredient.getQuantity() > availableIngredient.getQuantity()) {
+				recipe.get(indexRp).setQuantity(
+					recipeIngredient.getQuantity() - availableIngredient.getQuantity());
+				shoppingList.add(recipeIngredient);
+			    }
+			    // else if (recipeIngredient.getQuantity() == availableIngredient.getQuantity())
+			    // {
+			    // recipeIterator.remove();
+			    // }
 			}
+		    }
 		}
-		// Set ShoppingList
-		ingrediBoxManagerAgent.setShoppingList(shoppingList);
-		
-		//Printing available ingredients received
-		availableIngredientIterator = availableIngredientList.iterator();
-		System.out.println("\nIBM received available ingredients: ");
-		while (availableIngredientIterator.hasNext())
-		{
-			Ingredient ingredient = availableIngredientIterator.next();
-			System.out.print(ingredient.getQuantity() + " " + ingredient.getName() + "\t");
+
+		// add ingredi's to shoppinglist, which weren't available from inventory
+		else {
+		    shoppingList.add(recipeIngredient);
 		}
-		System.out.println("\n");
-		
-		// Print ingredients, remaining on shoppinglist
-		System.out.println("\nThis ingredients remain on shoppinglist after checking inventory: ");
-		Iterator<Ingredient> shoppingListIterator = shoppingList.iterator();
-		while (shoppingListIterator.hasNext())
-		{
-			Ingredient ingredient = shoppingListIterator.next();
-			System.out.print(ingredient.getQuantity() + " " + ingredient.getName() + "\t");
-		}
-		System.out.println("\n");
-		
+	    }
 	}
+	// Set ShoppingList
+	this.getDataStore().put("shoppingList", shoppingList);
+
+	// Printing available ingredients received
+	availableIngredientIterator = availableIngredientList.iterator();
+	System.out.println("\nIBM received available ingredients: ");
+	while (availableIngredientIterator.hasNext()) {
+	    Ingredient ingredient = availableIngredientIterator.next();
+	    System.out.print(ingredient.getQuantity() + " " + ingredient.getName() + "\t");
+	}
+	System.out.println("\n");
+
+	// Print ingredients, remaining on shoppinglist
+	System.out.println("\nThis ingredients remain on shoppinglist after checking inventory: ");
+	Iterator<Ingredient> shoppingListIterator = shoppingList.iterator();
+	while (shoppingListIterator.hasNext()) {
+	    Ingredient ingredient = shoppingListIterator.next();
+	    System.out.print(ingredient.getQuantity() + " " + ingredient.getName() + "\t");
+	}
+	System.out.println("\n");
+
+    }
 
 }

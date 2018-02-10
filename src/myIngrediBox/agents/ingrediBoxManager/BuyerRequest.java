@@ -21,11 +21,8 @@ import myIngrediBox.ontologies.Unit;
 
 public class BuyerRequest extends AchieveREInitiator {
 
-    private IngrediBoxManagerAgent ibm;
-
     public BuyerRequest(Agent a, ACLMessage msg, DataStore store) {
 	super(a, msg, store);
-	this.ibm = (IngrediBoxManagerAgent) a;
     }
 
     /**
@@ -36,6 +33,7 @@ public class BuyerRequest extends AchieveREInitiator {
     protected Vector prepareRequests(ACLMessage request) {
 	Vector v = new Vector();
 
+	ArrayList<Ingredient> shoppingList = (ArrayList<Ingredient>) this.getDataStore().get("shoppingList");
 	// sample data
 	ArrayList<Ingredient> requiredIngredients = new ArrayList<Ingredient>();
 	requiredIngredients.add(new Ingredient("Vanille", 1, Unit.Piece));
@@ -56,8 +54,8 @@ public class BuyerRequest extends AchieveREInitiator {
 
 	RequestBuyingAction requestBuyingAction = new RequestBuyingAction();
 
-	if (!ibm.getShoppingList().isEmpty()) {
-	    requestBuyingAction.setRequiredIngredients(ibm.getShoppingList());
+	if (!shoppingList.isEmpty()) {
+	    requestBuyingAction.setRequiredIngredients(shoppingList);
 	} else {
 	    // Set sample data
 	    requestBuyingAction.setRequiredIngredients(requiredIngredients);
