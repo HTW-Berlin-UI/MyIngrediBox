@@ -49,7 +49,8 @@ public class Ingredient implements Concept {
 	public boolean equals(Object object) {
 		try {
 			Ingredient ingredientToCompare = (Ingredient) object;
-			return this.name.equalsIgnoreCase(ingredientToCompare.name);
+			return this.name.equalsIgnoreCase(ingredientToCompare.name)
+					&& this.unit.equals(ingredientToCompare.getUnit());
 		} catch (ClassCastException cce) {
 		}
 		return false;

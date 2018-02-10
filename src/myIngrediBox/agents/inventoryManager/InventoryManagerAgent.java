@@ -39,7 +39,7 @@ public class InventoryManagerAgent extends Agent {
 		manageInventory.addSubBehaviour(registerServiceBehaviour);
 		manageInventory.addSubBehaviour(printInventoryBehaviour);
 
-		// Share DataStore with sequential behaviour 'magageInventory'
+		// Share DataStore with sequential behaviour 'manageInventory'
 		loadInventory.setDataStore(manageInventory.getDataStore());
 		parseInventory.setDataStore(manageInventory.getDataStore());
 		printInventoryBehaviour.setDataStore(manageInventory.getDataStore());

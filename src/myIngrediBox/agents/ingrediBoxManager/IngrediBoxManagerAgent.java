@@ -91,7 +91,7 @@ public class IngrediBoxManagerAgent extends Agent {
 		LeftoversPropose leftOversPropose = new LeftoversPropose(this, leftoversMessage, manageRecipe.getDataStore());
 		manageRecipe.addSubBehaviour(leftOversPropose);
 
-		this.addBehaviour(new WakerBehaviour(this, 20000) {
+		this.addBehaviour(new WakerBehaviour(this, 200) {
 
 			protected void onWake() {
 				this.getAgent().addBehaviour(manageRecipe);
