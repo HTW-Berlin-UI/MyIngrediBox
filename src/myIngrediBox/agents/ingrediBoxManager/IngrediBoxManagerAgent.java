@@ -43,7 +43,7 @@ public class IngrediBoxManagerAgent extends Agent {
 	findInventoryThanCheckAvailability.setDataStore(manageRecipe.getDataStore());
 
 	DFQueryBehaviour findInventory = new DFQueryBehaviour(this, "Inventory-Managing-Service",
-		findInventoryThanCheckAvailability.getDataStore());
+		manageRecipe.getDataStore());
 
 	findInventoryThanCheckAvailability.addSubBehaviour(findInventory);
 
@@ -51,8 +51,8 @@ public class IngrediBoxManagerAgent extends Agent {
 	ACLMessage im = new ACLMessage(ACLMessage.REQUEST);
 	im.setConversationId("inventory-request");
 	InventoryRequest inventoryRequest = new InventoryRequest(this, im,
-		findInventoryThanCheckAvailability.getDataStore());
-	inventoryRequest.setDataStore(findInventoryThanCheckAvailability.getDataStore());
+		manageRecipe.getDataStore());
+	inventoryRequest.setDataStore(manageRecipe.getDataStore());
 	findInventoryThanCheckAvailability.addSubBehaviour(inventoryRequest);
 
 	manageRecipe.addSubBehaviour(findInventoryThanCheckAvailability);
@@ -69,12 +69,12 @@ public class IngrediBoxManagerAgent extends Agent {
 	SequentialBehaviour findBuyerThanBuy = new SequentialBehaviour();
 	findBuyerThanBuy.setDataStore(manageRecipe.getDataStore());
 	DFQueryBehaviour findBuyer = new DFQueryBehaviour(this, "Ingredient-Buying-Service",
-		findBuyerThanBuy.getDataStore());
+		manageRecipe.getDataStore());
 
 	ACLMessage m = new ACLMessage(ACLMessage.REQUEST);
 	m.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
 	m.setConversationId("buyer-request");
-	BuyerRequest buy = new BuyerRequest(this, m, findBuyerThanBuy.getDataStore());
+	BuyerRequest buy = new BuyerRequest(this, m, manageRecipe.getDataStore());
 
 	findBuyerThanBuy.addSubBehaviour(findBuyer);
 	findBuyerThanBuy.addSubBehaviour(buy);
