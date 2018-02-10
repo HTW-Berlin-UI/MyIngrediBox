@@ -21,10 +21,6 @@ import myIngrediBox.shared.behaviours.RegisterServiceBehaviour;
 
 public class InventoryManagerAgent extends Agent {
 
-	private ArrayList<Ingredient> inventory;
-	private ArrayList<Ingredient> requestedIngredients;
-	private ArrayList<Ingredient> availableRequestedIngredients;
-
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -40,33 +36,37 @@ public class InventoryManagerAgent extends Agent {
 	protected void setup() {
 		super.setup();
 		
+		
+		// initialize behaviour to manage inventory
+		SequentialBehaviour manageInventory = new SequentialBehaviour();
+		
 		// Register Service
 		RegisterServiceBehaviour registerServiceBehaviour = new RegisterServiceBehaviour(this,
 				"Inventory-Managing-Service");
 
 		this.getContentManager().registerLanguage(codec);
 		this.getContentManager().registerOntology(ontology);
-
+		
 		// Load Inventory
 		ReadFromFile loadInventory = new ReadFromFile("assets/inventory/inventory.json");
 		ParseInventory parseInventory = new ParseInventory();
-		PrintIngredientList printIngredientBehaviour = new PrintIngredientList(this.inventory);
-		SequentialBehaviour manageInventory = new SequentialBehaviour();
+		PrintIngredientList printInventoryBehaviour = new PrintIngredientList(this);
 
 		manageInventory.addSubBehaviour(loadInventory);
 		manageInventory.addSubBehaviour(parseInventory);
 		manageInventory.addSubBehaviour(registerServiceBehaviour);
-		manageInventory.addSubBehaviour(printIngredientBehaviour);		
+		manageInventory.addSubBehaviour(printInventoryBehaviour);		
 
-		// Set shared DataStore
+		// Share DataStore with sequential behaviour 'magageInventory'
 		loadInventory.setDataStore(manageInventory.getDataStore());
 		parseInventory.setDataStore(manageInventory.getDataStore());
+		printInventoryBehaviour.setDataStore(manageInventory.getDataStore());
 
 		// React to message matching the template
 		MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchConversationId("inventory-request"),
 				MessageTemplate.MatchOntology(ontology.getName()));
 		// Receive ingredient request and response with sending available ingredients
-		RequestResponse requestResponse = new RequestResponse(this, mt);
+		RequestResponse requestResponse = new RequestResponse(this, mt, manageInventory.getDataStore());
 		
 		manageInventory.addSubBehaviour(requestResponse);
 				
@@ -80,32 +80,6 @@ public class InventoryManagerAgent extends Agent {
 		this.addBehaviour(new DeregisterServiceBehaviour(this));
 	}
 	
-
-	public ArrayList<Ingredient> getInventory() {
-		return inventory;
-	}
-
-	public void setInventory(ArrayList<Ingredient> inventory) {
-		this.inventory = inventory;
-	}
-
-	public ArrayList<Ingredient> getRequestedIngredients() {
-		return requestedIngredients;
-	}
-
-	public void setRequestedIngredients(ArrayList<Ingredient> requestedIngredients) {
-		this.requestedIngredients = requestedIngredients;
-	}
-
-	public ArrayList<Ingredient> getAvailableRequestedIngredients()
-	{
-		return availableRequestedIngredients;
-	}
-
-	public void setAvailableRequestedIngredients(ArrayList<Ingredient> availableRequestedIngredients)
-	{
-		this.availableRequestedIngredients = availableRequestedIngredients;
-	}
 
 	public Codec getCodec()
 	{
