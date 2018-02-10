@@ -1,8 +1,6 @@
 # MyIngrediBox
 [Wissens- und KI-basierte Systeme WS 2017/18] Studentische Projektarbeit zu Agentensystemen
 
-[Softwareprojekt WS 2016/17] Prototyp Client Anwendung
-
 ## About MyIngrediBox
 MyIngrediBox takes a recipe as its input and serves you the required virtual ingredients as its output.
 The output also contains information, where the ingredients can be bought, whether leftovers will remain and how much money you would spend for the ingredients.
@@ -22,6 +20,11 @@ Butterschmalz|solid|Kilo|0.4
 Vanille|misc|Piece|1
 Apfelkompott|liquid|Liter|0.5
 
+First Header | Second Header
+------------ | -------------
+Content from cell 1 | Content from cell 2
+Content in the first column | Content in the second column
+
 
 ## Installation
 * Please make sure JADE (Java Agent DEvelopment Framework) is imported and configured 
@@ -34,7 +37,7 @@ to be written
 ## Choose other buying preferences
 to be written
 
-#External Frameworks and Libraries
+##External Frameworks and Libraries
 
 * JADE
 * json-simple
