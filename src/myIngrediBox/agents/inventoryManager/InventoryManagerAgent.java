@@ -57,8 +57,8 @@ public class InventoryManagerAgent extends Agent {
 
 	@Override
 	protected void takeDown() {
-		super.takeDown();
 		this.addBehaviour(new DeregisterServiceBehaviour(this));
+		super.takeDown();
 	}
 	
 

@@ -8,33 +8,28 @@ import myIngrediBox.agents.ingrediBoxManager.IngrediBoxManagerAgent;
 import myIngrediBox.agents.inventoryManager.InventoryManagerAgent;
 import myIngrediBox.ontologies.Ingredient;
 
-public class PrintRecipeIngredientList extends OneShotBehaviour
-{
-	private ArrayList<Ingredient> ingredients;
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class PrintRecipeIngredientList extends OneShotBehaviour {
 
-	public PrintRecipeIngredientList(ArrayList<Ingredient> ingredients) {
-		super();
-		this.ingredients = ingredients;
-	}
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public void action() {
-		// TODO Auto-generated method stub
-		IngrediBoxManagerAgent ingrediBoxManagerAgent = (IngrediBoxManagerAgent) this.getAgent();
+    public PrintRecipeIngredientList() {
+	super();
+    }
 
-		Iterator<Ingredient> iterator = ingrediBoxManagerAgent.getRecipe().iterator();
+    @Override
+    public void action() {
+	ArrayList<Ingredient> recipe = (ArrayList<Ingredient>) this.getDataStore().get("recipe");
+
+	if(!recipe.isEmpty()) {
+		Iterator<Ingredient> iterator = recipe.iterator();
 
 		System.out.println("\nRecipe:");
 		while (iterator.hasNext()) {
-			Ingredient ingredient = iterator.next();
-			System.out.print(ingredient.getName() + "\t");
-			System.out.print(ingredient.getQuantity() + "\t");
-			System.out.println(ingredient.getUnit());
+		    Ingredient ingredient = iterator.next();
+		    System.out.print(ingredient.getName() + "\t");
+		    System.out.print(ingredient.getQuantity() + "\t");
+		    System.out.println(ingredient.getUnit());
 		}
-
 	}
+    }
 }

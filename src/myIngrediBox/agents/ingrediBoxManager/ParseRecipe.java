@@ -15,17 +15,15 @@ public class ParseRecipe extends OneShotBehaviour
 {
 
 	/**
-	 * 
+	 * Fetches a recipe from DataStore, which was imported and stored in DataStore by ReadFromFile
+	 * and stores the recipe in DataSore of associated Agent
 	 */
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void action()
 	{
-		// TODO Auto-generated method stub
 		
-		IngrediBoxManagerAgent ingrediBoxManagerAgent =  (IngrediBoxManagerAgent) this.getAgent();
-
 		JSONObject rawData = (JSONObject) this.getDataStore().get("rawData");
 
 		JSONArray recipe = (JSONArray) rawData.get("ingredients");
@@ -47,7 +45,7 @@ public class ParseRecipe extends OneShotBehaviour
 			tempRecipe.add(ingredient);
 		}
 
-		ingrediBoxManagerAgent.setRecipe(tempRecipe);
+		this.getDataStore().put("recipe", tempRecipe);
 	}
 
 }

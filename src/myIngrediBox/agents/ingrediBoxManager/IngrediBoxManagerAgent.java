@@ -1,167 +1,104 @@
 package myIngrediBox.agents.ingrediBoxManager;
 
-import java.util.ArrayList;
-
-import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
-import jade.content.onto.Ontology;
 import jade.core.Agent;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.core.behaviours.WakerBehaviour;
 import jade.domain.FIPANames;
 import jade.lang.acl.ACLMessage;
 import myIngrediBox.ontologies.IngrediBoxOntology;
-import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.shared.behaviours.DFQueryBehaviour;
+import myIngrediBox.shared.behaviours.DeregisterServiceBehaviour;
 import myIngrediBox.shared.behaviours.PrintRecipeIngredientList;
 import myIngrediBox.shared.behaviours.ReadFromFile;
 
 public class IngrediBoxManagerAgent extends Agent {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private ArrayList<Ingredient> recipe;
-	private ArrayList<Ingredient> shoppingList = new ArrayList<>();
-	private ArrayList<Ingredient> availableIngredientList = new ArrayList<>();
+    @Override
+    protected void setup() {
+	super.setup();
 
+	// Initialize behaviour to manage recipe
+	SequentialBehaviour manageRecipe = new SequentialBehaviour();
 
-	/**
-	 * message language FIPA-SL
-	 */
-	private Codec codec = new SLCodec();
+	this.getContentManager().registerLanguage(new SLCodec());
+	this.getContentManager().registerOntology(IngrediBoxOntology.getInstance());
 
-	/**
-	 * ontology used for semantic parsing
-	 */
-	private Ontology ontology = IngrediBoxOntology.getInstance();
+	// Load Recipe
+	ReadFromFile loadRecipe = new ReadFromFile("assets/recipes/EierkuchenSpezial.json");
+	ParseRecipe parseRecipe = new ParseRecipe();
+	PrintRecipeIngredientList printRecipeIngredientBehaviour = new PrintRecipeIngredientList();
 
-	@Override
-	protected void setup() {
-		super.setup();
+	loadRecipe.setDataStore(manageRecipe.getDataStore());
+	parseRecipe.setDataStore(manageRecipe.getDataStore());
+	printRecipeIngredientBehaviour.setDataStore(manageRecipe.getDataStore());
 
-		this.recipe = new ArrayList<Ingredient>();
+	manageRecipe.addSubBehaviour(loadRecipe);
+	manageRecipe.addSubBehaviour(parseRecipe);
+	manageRecipe.addSubBehaviour(printRecipeIngredientBehaviour);
 
-		this.getContentManager().registerLanguage(codec);
-		this.getContentManager().registerOntology(ontology);
+	// IMB-IM-Communication
 
-		// Load Recipe
-		ReadFromFile loadRecipe = new ReadFromFile("assets/recipes/EierkuchenSpezial.json");
-		ParseRecipe parseRecipe = new ParseRecipe();
-		PrintRecipeIngredientList printRecipeIngredientBehaviour = new PrintRecipeIngredientList(this.recipe);
+	SequentialBehaviour findInventoryThanCheckAvailability = new SequentialBehaviour();
+	findInventoryThanCheckAvailability.setDataStore(manageRecipe.getDataStore());
 
-		SequentialBehaviour manageRecipe = new SequentialBehaviour();
-		loadRecipe.setDataStore(manageRecipe.getDataStore());
-		parseRecipe.setDataStore(manageRecipe.getDataStore());
+	DFQueryBehaviour findInventory = new DFQueryBehaviour(this, "Inventory-Managing-Service",
+		manageRecipe.getDataStore());
 
-		manageRecipe.addSubBehaviour(loadRecipe);
-		manageRecipe.addSubBehaviour(parseRecipe);
-		manageRecipe.addSubBehaviour(printRecipeIngredientBehaviour);
+	findInventoryThanCheckAvailability.addSubBehaviour(findInventory);
 
-		// IMB-IM-Communication
+	// Check availability in inventory
+	ACLMessage im = new ACLMessage(ACLMessage.REQUEST);
+	im.setConversationId("inventory-request");
+	InventoryRequest inventoryRequest = new InventoryRequest(this, im,
+		manageRecipe.getDataStore());
+	inventoryRequest.setDataStore(manageRecipe.getDataStore());
+	findInventoryThanCheckAvailability.addSubBehaviour(inventoryRequest);
 
-		SequentialBehaviour findInventoryThanCheckAvailability = new SequentialBehaviour();
-		DFQueryBehaviour findInventory = new DFQueryBehaviour(this, "Inventory-Managing-Service",
-				findInventoryThanCheckAvailability.getDataStore());
+	manageRecipe.addSubBehaviour(findInventoryThanCheckAvailability);
 
-		findInventoryThanCheckAvailability.addSubBehaviour(findInventory);
+	// IMB-IM-Communication end
 
-		// register adapted AchieveREINitiator Behaviour
-		ACLMessage im = new ACLMessage(ACLMessage.REQUEST);
-		im.setConversationId("inventory-request");
-		InventoryRequest inventoryRequest = new InventoryRequest(this, im);
-		inventoryRequest.setDataStore(findInventoryThanCheckAvailability.getDataStore());
-		findInventoryThanCheckAvailability.addSubBehaviour(inventoryRequest);
+	// Create shopping list
+	CreateShoppingList createShoppingList = new CreateShoppingList();
+	createShoppingList.setDataStore(manageRecipe.getDataStore());
+	manageRecipe.addSubBehaviour(createShoppingList);
 
-		findInventoryThanCheckAvailability.setDataStore(manageRecipe.getDataStore());
-		manageRecipe.addSubBehaviour(findInventoryThanCheckAvailability);
+	// IBM-IB-Communication
 
-		// IMB-IM-Communication end
-		
-		// Create shopping list 
-		CreateShoppingList createShoppingList = new CreateShoppingList(this);
-		manageRecipe.addSubBehaviour(createShoppingList);
-		
-		// IBM-IB-Communication
+	SequentialBehaviour findBuyerThanBuy = new SequentialBehaviour();
+	findBuyerThanBuy.setDataStore(manageRecipe.getDataStore());
+	DFQueryBehaviour findBuyer = new DFQueryBehaviour(this, "Ingredient-Buying-Service",
+		manageRecipe.getDataStore());
 
-		SequentialBehaviour findBuyerThanBuy = new SequentialBehaviour();
-		DFQueryBehaviour findBuyer = new DFQueryBehaviour(this, "Ingredient-Buying-Service",
-				findBuyerThanBuy.getDataStore());
+	ACLMessage m = new ACLMessage(ACLMessage.REQUEST);
+	m.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
+	m.setConversationId("buyer-request");
+	BuyerRequest buy = new BuyerRequest(this, m, manageRecipe.getDataStore());
 
-		ACLMessage m = new ACLMessage(ACLMessage.REQUEST);
-		m.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
-		m.setConversationId("buyer-request");
-		BuyerRequest buy = new BuyerRequest(this, m, findBuyerThanBuy.getDataStore());
+	findBuyerThanBuy.addSubBehaviour(findBuyer);
+	findBuyerThanBuy.addSubBehaviour(buy);
 
-		findBuyerThanBuy.addSubBehaviour(findBuyer);
-		findBuyerThanBuy.addSubBehaviour(buy);
+	manageRecipe.addSubBehaviour(findBuyerThanBuy);
+	// IBM-IB-Communication end
 
-		findBuyerThanBuy.setDataStore(manageRecipe.getDataStore());
-		manageRecipe.addSubBehaviour(findBuyerThanBuy);
-		// IBM-IB-Communication end
+	this.addBehaviour(new WakerBehaviour(this, 200) {
 
-		this.addBehaviour(new WakerBehaviour(this, 200) {
+	    protected void onWake() {
+		this.getAgent().addBehaviour(manageRecipe);
+	    }
 
-			protected void onWake() {
-				this.getAgent().addBehaviour(manageRecipe);
-			}
+	});
+    }
 
-		});
+    @Override
+    protected void takeDown()
 
-		// TODO send Ingredis as ArrayList!! (like in RequestOffer Class and GoShoppin
-		// Class)
-		// oder inventoryRequest.setIngredientToRequest(itreq);...bauen
-
-	}
-
-	@Override
-	protected void takeDown()
-
-	{
-		super.takeDown();
-	}
-
-	public void setRecipe(ArrayList<Ingredient> recipe) {
-		this.recipe = recipe;
-	}
-
-	public ArrayList<Ingredient> getRecipe() {
-		return recipe;
-	}
-
-	public Ontology getOntology() {
-		return ontology;
-	}
-
-	public void setOntology(Ontology ontology) {
-		this.ontology = ontology;
-	}
-
-	public Codec getCodec() {
-		return codec;
-	}
-
-	public void setCodec(Codec codec) {
-		this.codec = codec;
-	}
-	
-	public ArrayList<Ingredient> getShoppingList()
-	{
-		return shoppingList;
-	}
-
-	public void setShoppingList(ArrayList<Ingredient> shoppingList)
-	{
-		this.shoppingList = shoppingList;
-	}
-
-	public ArrayList<Ingredient> getAvailableIngredientList()
-	{
-		return availableIngredientList;
-	}
-
-	public void setAvailableIngredientList(ArrayList<Ingredient> availableIngredientList)
-	{
-		this.availableIngredientList = availableIngredientList;
-	}
+    {
+	this.addBehaviour(new DeregisterServiceBehaviour(this));
+	super.takeDown();
+    }
 
 }
