@@ -86,8 +86,12 @@ public class IngrediBoxManagerAgent extends Agent {
 		// Calculate leftovers and send them to inventory
 		CalculateLeftovers calculateLeftovers = new CalculateLeftovers(manageRecipe.getDataStore());
 		manageRecipe.addSubBehaviour(calculateLeftovers);
+		ACLMessage leftoversMessage = new ACLMessage(ACLMessage.PROPOSE);
+		leftoversMessage.setProtocol(FIPANames.InteractionProtocol.FIPA_PROPOSE);
+		LeftoversPropose leftOversPropose = new LeftoversPropose(this, leftoversMessage, manageRecipe.getDataStore());
+		manageRecipe.addSubBehaviour(leftOversPropose);
 
-		this.addBehaviour(new WakerBehaviour(this, 200) {
+		this.addBehaviour(new WakerBehaviour(this, 20000) {
 
 			protected void onWake() {
 				this.getAgent().addBehaviour(manageRecipe);
