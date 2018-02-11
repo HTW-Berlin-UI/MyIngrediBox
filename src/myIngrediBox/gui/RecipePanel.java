@@ -24,13 +24,14 @@ public class RecipePanel extends JPanel {
 		dim.width = 250;
 		this.setPreferredSize(dim);
 
+		Border outerBorder = BorderFactory.createEmptyBorder(10, 10, 10, 10);
+
 		ingredientList = new JList<Ingredient>();
 		ingredientModel = new DefaultListModel<Ingredient>();
 		ingredientList.setModel(ingredientModel);
-		// ingredientList.setPreferredSize(new Dimension(110, 66));
+		ingredientList.setBorder(outerBorder);
 
 		TitledBorder innerBorder = BorderFactory.createTitledBorder("Recipe");
-		Border outerBorder = BorderFactory.createEmptyBorder(10, 10, 10, 10);
 		this.setBorder(BorderFactory.createCompoundBorder(outerBorder, innerBorder));
 		setLayout(new BorderLayout());
 

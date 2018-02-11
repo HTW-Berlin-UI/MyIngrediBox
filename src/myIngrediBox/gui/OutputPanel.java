@@ -20,11 +20,12 @@ public class OutputPanel extends JPanel {
 		Dimension dim = this.getPreferredSize();
 		dim.width = 250;
 		this.setPreferredSize(dim);
-
 		TitledBorder innerBorder = BorderFactory.createTitledBorder("Output");
 		Border outerBorder = BorderFactory.createEmptyBorder(10, 10, 10, 20);
 		this.setBorder(BorderFactory.createCompoundBorder(outerBorder, innerBorder));
 		setLayout(new BorderLayout());
+
+		textArea.setBorder(outerBorder);
 
 		add(new JScrollPane(textArea), BorderLayout.CENTER);
 
