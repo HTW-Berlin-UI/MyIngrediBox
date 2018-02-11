@@ -64,7 +64,7 @@ public class Ingredient implements Concept {
 
 	// make this printable
 	public String toString() {
-		return this.name + ": " + this.quantity + " " + this.unit;
+		return this.quantity + "\t " + this.unit + "\t " + this.name;
 	}
 
 }

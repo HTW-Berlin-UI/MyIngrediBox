@@ -3,7 +3,6 @@ package myIngrediBox.agents.ingrediBoxManager;
 import jade.content.lang.sl.SLCodec;
 import jade.core.Agent;
 import jade.core.behaviours.SequentialBehaviour;
-import jade.core.behaviours.WakerBehaviour;
 import jade.domain.FIPANames;
 import jade.lang.acl.ACLMessage;
 import myIngrediBox.ontologies.IngrediBoxOntology;
@@ -15,16 +14,21 @@ import myIngrediBox.shared.behaviours.ReadFromFile;
 public class IngrediBoxManagerAgent extends Agent {
 
 	private static final long serialVersionUID = 1L;
+	private SequentialBehaviour manageRecipe;
 
 	@Override
 	protected void setup() {
 		super.setup();
 
 		// Initialize behaviour to manage recipe
-		SequentialBehaviour manageRecipe = new SequentialBehaviour();
+		manageRecipe = new SequentialBehaviour();
 
 		this.getContentManager().registerLanguage(new SLCodec());
 		this.getContentManager().registerOntology(IngrediBoxOntology.getInstance());
+
+		// Initialize GUI
+		StartGUI startGUI = new StartGUI(manageRecipe.getDataStore());
+		this.addBehaviour(startGUI);
 
 		// Load Recipe
 		ReadFromFile loadRecipe = new ReadFromFile("assets/recipes/EierkuchenSpezial.json");
@@ -91,13 +95,14 @@ public class IngrediBoxManagerAgent extends Agent {
 		LeftoversPropose leftOversPropose = new LeftoversPropose(this, leftoversMessage, manageRecipe.getDataStore());
 		manageRecipe.addSubBehaviour(leftOversPropose);
 
-		this.addBehaviour(new WakerBehaviour(this, 200) {
+		// Update GUI
+		UpdateGUI updateGUI = new UpdateGUI(manageRecipe.getDataStore());
+		manageRecipe.addSubBehaviour(updateGUI);
 
-			protected void onWake() {
-				this.getAgent().addBehaviour(manageRecipe);
-			}
+	}
 
-		});
+	public void proceed() {
+		this.addBehaviour(this.manageRecipe);
 	}
 
 	@Override
