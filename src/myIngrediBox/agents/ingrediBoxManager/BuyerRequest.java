@@ -109,12 +109,12 @@ public class BuyerRequest extends AchieveREInitiator {
 		try {
 			a = (Action) this.myAgent.getContentManager().extractContent(inform);
 			SendPurchases sendPurchase = (SendPurchases) a.getAction();
-			ArrayList<Purchase> boughtIngredients = sendPurchase.getPurchases();
+			ArrayList<Purchase> purchases = sendPurchase.getPurchases();
 
 			System.out.println(
-					"These ingredients are bought from " + inform.getSender().getLocalName() + ":" + boughtIngredients);
+					"These ingredients are bought from " + inform.getSender().getLocalName() + ":" + purchases);
 
-			this.getDataStore().put("boughtIngredients", boughtIngredients);
+			this.getDataStore().put("purchases", purchases);
 
 		} catch (UngroundedException e) {
 			// TODO Auto-generated catch block

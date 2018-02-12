@@ -18,13 +18,13 @@ public class CalculateLeftovers extends OneShotBehaviour {
 
 	@Override
 	public void action() {
-		ArrayList<Purchase> boughtIngredients = (ArrayList<Purchase>) this.getDataStore().get("boughtIngredients");
+		ArrayList<Purchase> purchases = (ArrayList<Purchase>) this.getDataStore().get("purchases");
 
 		ArrayList<Ingredient> shoppingList = (ArrayList<Ingredient>) this.getDataStore().get("shoppingList");
 
 		ArrayList<Ingredient> leftovers = new ArrayList<Ingredient>();
 
-		boughtIngredients.forEach(purchase -> leftovers.addAll(purchase.getBoughtIngredients()));
+		purchases.forEach(purchase -> leftovers.addAll(purchase.getBoughtIngredients()));
 
 		leftovers.forEach(ingredient -> {
 			if (shoppingList.contains(ingredient))

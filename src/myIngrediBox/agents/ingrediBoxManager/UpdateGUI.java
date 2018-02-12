@@ -40,10 +40,10 @@ public class UpdateGUI extends OneShotBehaviour {
 			ArrayList<Ingredient> availableIngredients = (ArrayList<Ingredient>) this.getDataStore()
 					.get("availableIngredients");
 			ArrayList<Ingredient> leftovers = (ArrayList<Ingredient>) this.getDataStore().get("leftovers");
-			ArrayList<Purchase> boughtIngredients = (ArrayList<Purchase>) this.getDataStore().get("boughtIngredients");
+			ArrayList<Purchase> purchases = (ArrayList<Purchase>) this.getDataStore().get("purchases");
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					gui.updateResponse(new ResultNotification(availableIngredients, leftovers, boughtIngredients));
+					gui.updateResponse(new ResultNotification(availableIngredients, leftovers, purchases));
 				}
 			});
 		default:

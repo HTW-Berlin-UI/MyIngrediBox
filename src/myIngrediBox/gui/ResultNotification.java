@@ -8,13 +8,13 @@ import myIngrediBox.ontologies.Purchase;
 public class ResultNotification {
 	private ArrayList<Ingredient> availableIngredients;
 	private ArrayList<Ingredient> leftovers;
-	private ArrayList<Purchase> boughtIngredients;
+	private ArrayList<Purchase> purchases;
 
 	public ResultNotification(ArrayList<Ingredient> availableIngredients, ArrayList<Ingredient> leftovers,
 			ArrayList<Purchase> boughtIngredients) {
 		this.availableIngredients = availableIngredients;
 		this.leftovers = leftovers;
-		this.boughtIngredients = boughtIngredients;
+		this.purchases = boughtIngredients;
 	}
 
 }

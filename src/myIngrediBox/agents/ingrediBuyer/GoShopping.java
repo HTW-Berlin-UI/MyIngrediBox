@@ -171,18 +171,17 @@ public class GoShopping extends ContractNetInitiator {
 			a = (Action) this.myAgent.getContentManager().extractContent(inform);
 			TradeIngredients tradeIngredients = (TradeIngredients) a.getAction();
 
-			HashMap<String, ArrayList<PurchasableIngredient>> boughtIngredients = (HashMap<String, ArrayList<PurchasableIngredient>>) this
-					.getDataStore().get("boughtIngredients");
+			ArrayList<Purchase> purchases = (ArrayList<Purchase>) this.getDataStore().get("purchases");
 
-			if (boughtIngredients == null)
-				boughtIngredients = new HashMap<String, ArrayList<PurchasableIngredient>>();
+			if (purchases == null)
+				purchases = new ArrayList<Purchase>();
 
-			boughtIngredients.put(inform.getSender().getLocalName(), tradeIngredients.getIngredients());
+			purchases.add(new Purchase(inform.getSender().getLocalName(), tradeIngredients.getIngredients()));
 
 			System.out.println("These ingredients are bought from " + inform.getSender().getLocalName() + ":"
 					+ tradeIngredients.getIngredients());
 
-			this.getDataStore().put("boughtIngredients", boughtIngredients);
+			this.getDataStore().put("purchases", purchases);
 
 		} catch (UngroundedException e) {
 			// TODO Auto-generated catch block
@@ -216,16 +215,9 @@ public class GoShopping extends ContractNetInitiator {
 			}
 			response.setPerformative(ACLMessage.INFORM);
 
-			HashMap<String, ArrayList<PurchasableIngredient>> boughtIngredients = (HashMap<String, ArrayList<PurchasableIngredient>>) this
-					.getDataStore().get("boughtIngredients");
+			ArrayList<Purchase> purchases = (ArrayList<Purchase>) this.getDataStore().get("purchases");
 
 			SendPurchases sendPurchases = new SendPurchases();
-
-			ArrayList<Purchase> purchases = new ArrayList<Purchase>();
-
-			for (String market : boughtIngredients.keySet()) {
-				purchases.add(new Purchase(market, boughtIngredients.get(market)));
-			}
 
 			sendPurchases.setPurchases(purchases);
 
