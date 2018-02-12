@@ -1,5 +1,7 @@
 package myIngrediBox.agents.ingrediBoxManager;
 
+import java.util.ArrayList;
+
 import javax.swing.SwingUtilities;
 
 import jade.content.lang.sl.SLCodec;
@@ -8,7 +10,9 @@ import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.FIPANames;
 import jade.lang.acl.ACLMessage;
 import myIngrediBox.gui.MyIngrediBoxGUI;
+import myIngrediBox.ontologies.BuyingPreference;
 import myIngrediBox.ontologies.IngrediBoxOntology;
+import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.shared.behaviours.DFQueryBehaviour;
 import myIngrediBox.shared.behaviours.DeregisterServiceBehaviour;
 import myIngrediBox.shared.behaviours.PrintRecipeIngredientList;
@@ -17,7 +21,6 @@ import myIngrediBox.shared.behaviours.ReadFromFile;
 public class IngrediBoxManagerAgent extends Agent {
 
 	private static final long serialVersionUID = 1L;
-	private SequentialBehaviour manageRecipe;
 	private MyIngrediBoxGUI gui;
 
 	@Override
@@ -26,9 +29,6 @@ public class IngrediBoxManagerAgent extends Agent {
 
 		this.getContentManager().registerLanguage(new SLCodec());
 		this.getContentManager().registerOntology(IngrediBoxOntology.getInstance());
-
-		// Initialize behaviour to manage recipe
-		manageRecipe = new SequentialBehaviour();
 
 		// Initialize GUI
 		IngrediBoxManagerAgent agentReference = this;
@@ -41,7 +41,12 @@ public class IngrediBoxManagerAgent extends Agent {
 
 	}
 
-	public void proceed() {
+	public void proceed(ArrayList<Ingredient> recipe, BuyingPreference preference) {
+
+		// Initialize behaviour to manage recipe
+		SequentialBehaviour manageRecipe = new SequentialBehaviour();
+		manageRecipe.getDataStore().put("recipe", recipe);
+		manageRecipe.getDataStore().put("preference", preference);
 
 		// IMB-IM-Communication
 

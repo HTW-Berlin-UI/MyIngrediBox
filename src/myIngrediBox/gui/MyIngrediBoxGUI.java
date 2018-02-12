@@ -2,6 +2,7 @@ package myIngrediBox.gui;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.swing.JFrame;
 
@@ -46,8 +47,11 @@ public class MyIngrediBoxGUI extends JFrame {
 
 		actionBar.setSubmitListener(new SubmitListener() {
 			public void submit(BuyingPreference preference) {
-				System.out.println(preference);
-				agent.proceed();
+
+				ArrayList<Ingredient> recipe = Collections.list(recipePanel.getRecipe());
+
+				if (!recipe.isEmpty())
+					agent.proceed(recipe, preference);
 			}
 		});
 

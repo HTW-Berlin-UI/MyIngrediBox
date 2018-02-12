@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -93,6 +94,10 @@ public class RecipePanel extends JPanel implements ActionListener {
 	public void setSampleDate(ArrayList<Ingredient> recipe) {
 		this.ingredientModel.clear();
 		recipe.forEach(ingredient -> this.ingredientModel.addElement(ingredient));
+	}
+
+	public Enumeration<Ingredient> getRecipe() {
+		return this.ingredientModel.elements();
 	}
 
 }
