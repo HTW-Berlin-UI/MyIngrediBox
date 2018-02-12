@@ -7,7 +7,9 @@ import javax.swing.SwingUtilities;
 import jade.core.behaviours.DataStore;
 import jade.core.behaviours.OneShotBehaviour;
 import myIngrediBox.gui.MyIngrediBoxGUI;
+import myIngrediBox.gui.ResultNotification;
 import myIngrediBox.ontologies.Ingredient;
+import myIngrediBox.ontologies.Purchase;
 
 public class UpdateGUI extends OneShotBehaviour {
 
@@ -35,7 +37,15 @@ public class UpdateGUI extends OneShotBehaviour {
 			});
 			break;
 		case RESULT:
-			gui.updateResponse("Fertig");
+			ArrayList<Ingredient> availableIngredients = (ArrayList<Ingredient>) this.getDataStore()
+					.get("availableIngredients");
+			ArrayList<Ingredient> leftovers = (ArrayList<Ingredient>) this.getDataStore().get("leftovers");
+			ArrayList<Purchase> boughtIngredients = (ArrayList<Purchase>) this.getDataStore().get("boughtIngredients");
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					gui.updateResponse(new ResultNotification(availableIngredients, leftovers, boughtIngredients));
+				}
+			});
 		default:
 			break;
 		}

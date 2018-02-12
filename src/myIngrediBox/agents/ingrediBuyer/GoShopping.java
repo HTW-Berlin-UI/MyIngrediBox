@@ -18,8 +18,9 @@ import jade.proto.ContractNetInitiator;
 import myIngrediBox.ontologies.BuyingPreference;
 import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.ontologies.PurchasableIngredient;
+import myIngrediBox.ontologies.Purchase;
 import myIngrediBox.ontologies.RequestOffer;
-import myIngrediBox.ontologies.SendPurchase;
+import myIngrediBox.ontologies.SendPurchases;
 import myIngrediBox.ontologies.TradeIngredients;
 
 public class GoShopping extends ContractNetInitiator {
@@ -170,13 +171,13 @@ public class GoShopping extends ContractNetInitiator {
 			a = (Action) this.myAgent.getContentManager().extractContent(inform);
 			TradeIngredients tradeIngredients = (TradeIngredients) a.getAction();
 
-			ArrayList<PurchasableIngredient> boughtIngredients = (ArrayList<PurchasableIngredient>) this.getDataStore()
-					.get("boughtIngredients");
+			HashMap<String, ArrayList<PurchasableIngredient>> boughtIngredients = (HashMap<String, ArrayList<PurchasableIngredient>>) this
+					.getDataStore().get("boughtIngredients");
 
 			if (boughtIngredients == null)
-				boughtIngredients = new ArrayList<PurchasableIngredient>();
+				boughtIngredients = new HashMap<String, ArrayList<PurchasableIngredient>>();
 
-			boughtIngredients.addAll(tradeIngredients.getIngredients());
+			boughtIngredients.put(inform.getSender().getLocalName(), tradeIngredients.getIngredients());
 
 			System.out.println("These ingredients are bought from " + inform.getSender().getLocalName() + ":"
 					+ tradeIngredients.getIngredients());
@@ -215,13 +216,20 @@ public class GoShopping extends ContractNetInitiator {
 			}
 			response.setPerformative(ACLMessage.INFORM);
 
-			ArrayList<PurchasableIngredient> boughtIngredients = (ArrayList<PurchasableIngredient>) this.getDataStore()
-					.get("boughtIngredients");
+			HashMap<String, ArrayList<PurchasableIngredient>> boughtIngredients = (HashMap<String, ArrayList<PurchasableIngredient>>) this
+					.getDataStore().get("boughtIngredients");
 
-			SendPurchase sendPurchase = new SendPurchase();
-			sendPurchase.setBoughtIngredients(boughtIngredients);
+			SendPurchases sendPurchases = new SendPurchases();
 
-			Action responseAction = new Action(this.getAgent().getAID(), sendPurchase);
+			ArrayList<Purchase> purchases = new ArrayList<Purchase>();
+
+			for (String market : boughtIngredients.keySet()) {
+				purchases.add(new Purchase(market, boughtIngredients.get(market)));
+			}
+
+			sendPurchases.setPurchases(purchases);
+
+			Action responseAction = new Action(this.getAgent().getAID(), sendPurchases);
 
 			this.getAgent().getContentManager().fillContent(response, responseAction);
 

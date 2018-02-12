@@ -64,8 +64,8 @@ public class MyIngrediBoxGUI extends JFrame {
 
 	}
 
-	public void updateResponse(String text) {
-		this.outputPanel.appendText(text);
+	public void updateResponse(ResultNotification result) {
+		this.outputPanel.appendText("Fertig");
 	}
 
 	public void receiveRecipe(ArrayList<Ingredient> recipe) {

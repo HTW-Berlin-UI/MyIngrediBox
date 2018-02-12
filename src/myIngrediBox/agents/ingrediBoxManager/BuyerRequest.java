@@ -14,9 +14,9 @@ import jade.lang.acl.ACLMessage;
 import jade.proto.AchieveREInitiator;
 import myIngrediBox.ontologies.BuyingPreference;
 import myIngrediBox.ontologies.Ingredient;
-import myIngrediBox.ontologies.PurchasableIngredient;
+import myIngrediBox.ontologies.Purchase;
 import myIngrediBox.ontologies.RequestBuyingAction;
-import myIngrediBox.ontologies.SendPurchase;
+import myIngrediBox.ontologies.SendPurchases;
 import myIngrediBox.ontologies.Unit;
 
 public class BuyerRequest extends AchieveREInitiator {
@@ -72,7 +72,7 @@ public class BuyerRequest extends AchieveREInitiator {
 		}
 
 		// Set buying preference
-		requestBuyingAction.setPreference(BuyingPreference.LOW_LEFTOVERS);
+		requestBuyingAction.setPreference(preference);
 
 		Action a = new Action(buyerAgent, requestBuyingAction);
 
@@ -108,8 +108,8 @@ public class BuyerRequest extends AchieveREInitiator {
 		Action a;
 		try {
 			a = (Action) this.myAgent.getContentManager().extractContent(inform);
-			SendPurchase sendPurchase = (SendPurchase) a.getAction();
-			ArrayList<PurchasableIngredient> boughtIngredients = sendPurchase.getBoughtIngredients();
+			SendPurchases sendPurchase = (SendPurchases) a.getAction();
+			ArrayList<Purchase> boughtIngredients = sendPurchase.getPurchases();
 
 			System.out.println(
 					"These ingredients are bought from " + inform.getSender().getLocalName() + ":" + boughtIngredients);
