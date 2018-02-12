@@ -6,10 +6,14 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -22,7 +26,7 @@ import myIngrediBox.ontologies.Unit;
 public class IngredientPanel extends JPanel {
 
 	private JTextField nameField;
-	private JTextField quantityField;
+	private JFormattedTextField quantityField;
 	private JButton addButton;
 	private IngredientListener ingredientListener;
 	private JComboBox unitComboBox;
@@ -30,7 +34,12 @@ public class IngredientPanel extends JPanel {
 	public IngredientPanel() {
 
 		nameField = new JTextField(10);
-		quantityField = new JTextField(10);
+
+		NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+		DecimalFormat decimalFormat = (DecimalFormat) numberFormat;
+		decimalFormat.setGroupingUsed(false);
+		quantityField = new JFormattedTextField(decimalFormat);
+		quantityField.setColumns(10);
 
 		addButton = new JButton("Add");
 
@@ -40,10 +49,11 @@ public class IngredientPanel extends JPanel {
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String name = nameField.getText();
-				Double quantity = Double.parseDouble(quantityField.getText());
+				Double quantity = quantityField.getValue() != null ? ((Number) quantityField.getValue()).doubleValue()
+						: null;
 				Unit unit = (Unit) unitComboBox.getSelectedItem();
 
-				if (ingredientListener != null) {
+				if (ingredientListener != null && !name.isEmpty() && !quantity.isNaN() && unit != null) {
 					IngredientEvent iv = new IngredientEvent(this, new Ingredient(name, quantity, unit));
 					ingredientListener.ingredientEventOccured(iv);
 				}
