@@ -1,11 +1,13 @@
 package myIngrediBox.gui;
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
 import myIngrediBox.agents.ingrediBoxManager.IngrediBoxManagerAgent;
 import myIngrediBox.ontologies.BuyingPreference;
+import myIngrediBox.ontologies.Ingredient;
 
 public class MyIngrediBoxGUI extends JFrame {
 
@@ -49,10 +51,21 @@ public class MyIngrediBoxGUI extends JFrame {
 			}
 		});
 
+		recipePanel.setDataRequestListener(new DataRequestListener() {
+			public void requestSampleData() {
+				agent.getSampleData();
+			}
+
+		});
+
 	}
 
 	public void updateResponse(String text) {
 		this.outputPanel.appendText(text);
+	}
+
+	public void receiveRecipe(ArrayList<Ingredient> recipe) {
+		this.recipePanel.setSampleDate(recipe);
 	}
 
 }

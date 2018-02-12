@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -21,6 +22,7 @@ public class RecipePanel extends JPanel implements ActionListener {
 
 	private JList<Ingredient> ingredientList;
 	private DefaultListModel<Ingredient> ingredientModel;
+	private DataRequestListener dataRequestListener;
 	private JButton deleteButton;
 	private JButton testDataButton;
 
@@ -34,6 +36,7 @@ public class RecipePanel extends JPanel implements ActionListener {
 		testDataButton = new JButton("Sample Data");
 
 		deleteButton.addActionListener(this);
+		testDataButton.addActionListener(this);
 
 		Border outerBorder = BorderFactory.createEmptyBorder(10, 10, 10, 10);
 
@@ -77,9 +80,19 @@ public class RecipePanel extends JPanel implements ActionListener {
 			}
 
 		} else if (clicked.equals(testDataButton)) {
-
+			if (this.dataRequestListener != null)
+				this.dataRequestListener.requestSampleData();
 		}
 
+	}
+
+	public void setDataRequestListener(DataRequestListener dataRequestListener) {
+		this.dataRequestListener = dataRequestListener;
+	}
+
+	public void setSampleDate(ArrayList<Ingredient> recipe) {
+		this.ingredientModel.clear();
+		recipe.forEach(ingredient -> this.ingredientModel.addElement(ingredient));
 	}
 
 }
