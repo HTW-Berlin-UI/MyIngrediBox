@@ -71,10 +71,11 @@ public class IngredientPanel extends JPanel {
 
 		Dimension dim = this.getPreferredSize();
 		dim.width = 250;
+		dim.height = 200;
 		this.setPreferredSize(dim);
 
 		TitledBorder innerBorder = BorderFactory.createTitledBorder("Add Ingredient");
-		Border outerBorder = BorderFactory.createEmptyBorder(10, 20, 10, 10);
+		Border outerBorder = BorderFactory.createEmptyBorder(10, 10, 10, 10);
 
 		this.setBorder(BorderFactory.createCompoundBorder(outerBorder, innerBorder));
 
@@ -83,10 +84,10 @@ public class IngredientPanel extends JPanel {
 		GridBagConstraints gc = new GridBagConstraints();
 
 		gc.weightx = 1;
+		gc.weighty = 1;
 
 		///////////// First Row///////////////////////
 		gc.gridy = 0;
-		gc.weighty = 0.1;
 
 		gc.gridx = 0;
 		gc.anchor = GridBagConstraints.LINE_END;
@@ -101,7 +102,6 @@ public class IngredientPanel extends JPanel {
 
 		///////////// Next Row///////////////////////
 		gc.gridy++;
-		gc.weighty = 0.1;
 
 		gc.gridx = 0;
 		gc.anchor = GridBagConstraints.LINE_END;
@@ -116,7 +116,6 @@ public class IngredientPanel extends JPanel {
 		///////////// Next Row///////////////////////
 
 		gc.gridy++;
-		gc.weighty = 0.1;
 
 		gc.gridx = 0;
 		gc.anchor = GridBagConstraints.LINE_END;
@@ -131,11 +130,10 @@ public class IngredientPanel extends JPanel {
 		///////////// Next Row///////////////////////
 
 		gc.gridy++;
-		gc.weighty = 1;
 
 		gc.gridx = 1;
 		gc.insets = new Insets(10, 0, 0, 0);
-		gc.anchor = GridBagConstraints.FIRST_LINE_START;
+		gc.anchor = GridBagConstraints.LINE_START;
 		this.add(addButton, gc);
 
 	}

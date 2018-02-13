@@ -31,6 +31,7 @@ public class RecipePanel extends JPanel implements ActionListener {
 
 		Dimension dim = this.getPreferredSize();
 		dim.width = 250;
+		dim.height = 350;
 		this.setPreferredSize(dim);
 
 		deleteButton = new JButton("Delete");

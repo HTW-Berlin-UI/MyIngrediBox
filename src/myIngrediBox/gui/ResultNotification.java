@@ -17,4 +17,13 @@ public class ResultNotification {
 		this.purchases = boughtIngredients;
 	}
 
+	public String getMessage() {
+		StringBuilder message = new StringBuilder();
+
+		message.append("That's already in your inventory:\n");
+		availableIngredients.forEach(ingredient -> message.append(ingredient + "\n"));
+
+		return message.toString();
+	}
+
 }

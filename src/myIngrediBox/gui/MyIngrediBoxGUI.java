@@ -1,10 +1,14 @@
 package myIngrediBox.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import myIngrediBox.agents.ingrediBoxManager.IngrediBoxManagerAgent;
 import myIngrediBox.ontologies.BuyingPreference;
@@ -30,12 +34,20 @@ public class MyIngrediBoxGUI extends JFrame {
 
 		setLayout(new BorderLayout());
 
-		add(actionBar, BorderLayout.SOUTH);
-		add(ingredientPanel, BorderLayout.WEST);
-		add(recipePanel, BorderLayout.CENTER);
-		add(outputPanel, BorderLayout.EAST);
+		JPanel inputWrap = new JPanel();
+		inputWrap.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		inputWrap.add(ingredientPanel);
+		inputWrap.add(recipePanel);
+		Dimension dim = inputWrap.getPreferredSize();
+		dim.width = 250;
+		inputWrap.setPreferredSize(dim);
+		inputWrap.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 
-		setBounds(300, 200, 750, 400);
+		add(actionBar, BorderLayout.SOUTH);
+		add(inputWrap, BorderLayout.WEST);
+		add(outputPanel, BorderLayout.CENTER);
+
+		setBounds(300, 200, 600, 632);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
 
@@ -65,7 +77,7 @@ public class MyIngrediBoxGUI extends JFrame {
 	}
 
 	public void updateResponse(ResultNotification result) {
-		this.outputPanel.appendText("Fertig");
+		this.outputPanel.setText(result.getMessage());
 	}
 
 	public void receiveRecipe(ArrayList<Ingredient> recipe) {
