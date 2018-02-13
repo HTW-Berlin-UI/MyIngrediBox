@@ -1,12 +1,18 @@
 package myIngrediBox.agents.ingrediBoxManager;
 
+import java.util.ArrayList;
+
+import javax.swing.SwingUtilities;
+
 import jade.content.lang.sl.SLCodec;
 import jade.core.Agent;
 import jade.core.behaviours.SequentialBehaviour;
-import jade.core.behaviours.WakerBehaviour;
 import jade.domain.FIPANames;
 import jade.lang.acl.ACLMessage;
+import myIngrediBox.gui.MyIngrediBoxGUI;
+import myIngrediBox.ontologies.BuyingPreference;
 import myIngrediBox.ontologies.IngrediBoxOntology;
+import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.shared.behaviours.DFQueryBehaviour;
 import myIngrediBox.shared.behaviours.DeregisterServiceBehaviour;
 import myIngrediBox.shared.behaviours.PrintRecipeIngredientList;
@@ -15,29 +21,32 @@ import myIngrediBox.shared.behaviours.ReadFromFile;
 public class IngrediBoxManagerAgent extends Agent {
 
 	private static final long serialVersionUID = 1L;
+	private MyIngrediBoxGUI gui;
 
 	@Override
 	protected void setup() {
 		super.setup();
 
-		// Initialize behaviour to manage recipe
-		SequentialBehaviour manageRecipe = new SequentialBehaviour();
-
 		this.getContentManager().registerLanguage(new SLCodec());
 		this.getContentManager().registerOntology(IngrediBoxOntology.getInstance());
 
-		// Load Recipe
-		ReadFromFile loadRecipe = new ReadFromFile("assets/recipes/EierkuchenSpezial.json");
-		ParseRecipe parseRecipe = new ParseRecipe();
-		PrintRecipeIngredientList printRecipeIngredientBehaviour = new PrintRecipeIngredientList();
+		// Initialize GUI
+		IngrediBoxManagerAgent agentReference = this;
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				gui = new MyIngrediBoxGUI((agentReference));
 
-		loadRecipe.setDataStore(manageRecipe.getDataStore());
-		parseRecipe.setDataStore(manageRecipe.getDataStore());
-		printRecipeIngredientBehaviour.setDataStore(manageRecipe.getDataStore());
+			}
+		});
 
-		manageRecipe.addSubBehaviour(loadRecipe);
-		manageRecipe.addSubBehaviour(parseRecipe);
-		manageRecipe.addSubBehaviour(printRecipeIngredientBehaviour);
+	}
+
+	public void proceed(ArrayList<Ingredient> recipe, BuyingPreference preference) {
+
+		// Initialize behaviour to manage recipe
+		SequentialBehaviour manageRecipe = new SequentialBehaviour();
+		manageRecipe.getDataStore().put("recipe", recipe);
+		manageRecipe.getDataStore().put("preference", preference);
 
 		// IMB-IM-Communication
 
@@ -91,13 +100,33 @@ public class IngrediBoxManagerAgent extends Agent {
 		LeftoversPropose leftOversPropose = new LeftoversPropose(this, leftoversMessage, manageRecipe.getDataStore());
 		manageRecipe.addSubBehaviour(leftOversPropose);
 
-		this.addBehaviour(new WakerBehaviour(this, 200) {
+		// Update GUI
+		UpdateGUI updateGUI = new UpdateGUI(gui, GUIUpdateType.RESULT, manageRecipe.getDataStore());
+		manageRecipe.addSubBehaviour(updateGUI);
 
-			protected void onWake() {
-				this.getAgent().addBehaviour(manageRecipe);
-			}
+		this.addBehaviour(manageRecipe);
+	}
 
-		});
+	public void getSampleData() {
+
+		// Load Recipe
+		SequentialBehaviour getSampleData = new SequentialBehaviour();
+		ReadFromFile loadRecipe = new ReadFromFile("assets/recipes/EierkuchenSpezial.json");
+		ParseRecipe parseRecipe = new ParseRecipe();
+		PrintRecipeIngredientList printRecipeIngredientBehaviour = new PrintRecipeIngredientList();
+		UpdateGUI updateGUI = new UpdateGUI(gui, GUIUpdateType.SAMPLE_DATA, getSampleData.getDataStore());
+
+		loadRecipe.setDataStore(getSampleData.getDataStore());
+		parseRecipe.setDataStore(getSampleData.getDataStore());
+		printRecipeIngredientBehaviour.setDataStore(getSampleData.getDataStore());
+
+		getSampleData.addSubBehaviour(loadRecipe);
+		getSampleData.addSubBehaviour(parseRecipe);
+		getSampleData.addSubBehaviour(printRecipeIngredientBehaviour);
+		getSampleData.addSubBehaviour(updateGUI);
+
+		this.addBehaviour(getSampleData);
+
 	}
 
 	@Override

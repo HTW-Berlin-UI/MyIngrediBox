@@ -2,6 +2,7 @@ package myIngrediBox.agents.ingrediBuyer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Vector;
 
 import jade.content.lang.Codec.CodecException;
@@ -18,8 +19,9 @@ import jade.proto.ContractNetInitiator;
 import myIngrediBox.ontologies.BuyingPreference;
 import myIngrediBox.ontologies.Ingredient;
 import myIngrediBox.ontologies.PurchasableIngredient;
+import myIngrediBox.ontologies.Purchase;
 import myIngrediBox.ontologies.RequestOffer;
-import myIngrediBox.ontologies.SendPurchase;
+import myIngrediBox.ontologies.SendPurchases;
 import myIngrediBox.ontologies.TradeIngredients;
 
 public class GoShopping extends ContractNetInitiator {
@@ -133,7 +135,8 @@ public class GoShopping extends ContractNetInitiator {
 			ArrayList<PurchasableIngredient> ingredientsToBuy = new ArrayList<PurchasableIngredient>();
 
 			// if market appears on shopping list than add appropriate ingredients to order
-			for (PurchasableIngredient ingredientOnList : shoppingList.keySet()) {
+			Set<PurchasableIngredient> ingredientsOnList = shoppingList.keySet();
+			for (PurchasableIngredient ingredientOnList : ingredientsOnList) {
 				if (shoppingList.get(ingredientOnList).equals(proposal.getSender()))
 					ingredientsToBuy.add(ingredientOnList);
 			}
@@ -170,18 +173,17 @@ public class GoShopping extends ContractNetInitiator {
 			a = (Action) this.myAgent.getContentManager().extractContent(inform);
 			TradeIngredients tradeIngredients = (TradeIngredients) a.getAction();
 
-			ArrayList<PurchasableIngredient> boughtIngredients = (ArrayList<PurchasableIngredient>) this.getDataStore()
-					.get("boughtIngredients");
+			ArrayList<Purchase> purchases = (ArrayList<Purchase>) this.getDataStore().get("purchases");
 
-			if (boughtIngredients == null)
-				boughtIngredients = new ArrayList<PurchasableIngredient>();
+			if (purchases == null)
+				purchases = new ArrayList<Purchase>();
 
-			boughtIngredients.addAll(tradeIngredients.getIngredients());
+			purchases.add(new Purchase(inform.getSender().getLocalName(), tradeIngredients.getIngredients()));
 
 			System.out.println("These ingredients are bought from " + inform.getSender().getLocalName() + ":"
 					+ tradeIngredients.getIngredients());
 
-			this.getDataStore().put("boughtIngredients", boughtIngredients);
+			this.getDataStore().put("purchases", purchases);
 
 		} catch (UngroundedException e) {
 			// TODO Auto-generated catch block
@@ -215,13 +217,13 @@ public class GoShopping extends ContractNetInitiator {
 			}
 			response.setPerformative(ACLMessage.INFORM);
 
-			ArrayList<PurchasableIngredient> boughtIngredients = (ArrayList<PurchasableIngredient>) this.getDataStore()
-					.get("boughtIngredients");
+			ArrayList<Purchase> purchases = (ArrayList<Purchase>) this.getDataStore().get("purchases");
 
-			SendPurchase sendPurchase = new SendPurchase();
-			sendPurchase.setBoughtIngredients(boughtIngredients);
+			SendPurchases sendPurchases = new SendPurchases();
 
-			Action responseAction = new Action(this.getAgent().getAID(), sendPurchase);
+			sendPurchases.setPurchases(purchases);
+
+			Action responseAction = new Action(this.getAgent().getAID(), sendPurchases);
 
 			this.getAgent().getContentManager().fillContent(response, responseAction);
 

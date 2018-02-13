@@ -2,6 +2,7 @@ package myIngrediBox.agents.ingrediBuyer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import jade.core.AID;
 import myIngrediBox.ontologies.PurchasableIngredient;
@@ -27,6 +28,8 @@ public abstract class BuyingController {
 
 		for (AID market : this.offers.keySet()) {
 
+			ArrayList<PurchasableIngredient> betterIngredients = new ArrayList<PurchasableIngredient>();
+
 			for (PurchasableIngredient ingredient : this.offers.get(market)) {
 
 				// if proposed ingredient is served by another market and is cheaper than the
@@ -34,13 +37,19 @@ public abstract class BuyingController {
 				if (shoppingList.containsKey(ingredient)) {
 
 					// find the comparable ingredient on shopping list
-					for (PurchasableIngredient ingredientOnList : shoppingList.keySet()) {
+					Iterator<PurchasableIngredient> iterator = shoppingList.keySet().iterator();
+
+					while (iterator.hasNext()) {
+
+						PurchasableIngredient ingredientOnList = iterator.next();
+
 						if (ingredientOnList.equals(ingredient)) {
 
 							// now decide whether to replace the item on the list with new ingredient
 							if (this.buyingStrategyMatch(ingredient, ingredientOnList)) {
-								shoppingList.remove(ingredientOnList);
-								shoppingList.put(ingredient, market);
+								iterator.remove();
+								betterIngredients.add(ingredient);
+
 							}
 
 						}
@@ -53,6 +62,8 @@ public abstract class BuyingController {
 				}
 
 			}
+
+			betterIngredients.forEach(ingredient -> shoppingList.put(ingredient, market));
 
 		}
 		return shoppingList;

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import jade.core.behaviours.DataStore;
 import jade.core.behaviours.OneShotBehaviour;
 import myIngrediBox.ontologies.Ingredient;
-import myIngrediBox.ontologies.PurchasableIngredient;
+import myIngrediBox.ontologies.Purchase;
 
 public class CalculateLeftovers extends OneShotBehaviour {
 
@@ -18,12 +18,14 @@ public class CalculateLeftovers extends OneShotBehaviour {
 
 	@Override
 	public void action() {
-		ArrayList<PurchasableIngredient> boughtIngredients = (ArrayList<PurchasableIngredient>) this.getDataStore()
-				.get("boughtIngredients");
+		ArrayList<Purchase> purchases = (ArrayList<Purchase>) this.getDataStore().get("purchases");
 
 		ArrayList<Ingredient> shoppingList = (ArrayList<Ingredient>) this.getDataStore().get("shoppingList");
 
-		ArrayList<Ingredient> leftovers = new ArrayList<Ingredient>(boughtIngredients);
+		ArrayList<Ingredient> leftovers = new ArrayList<Ingredient>();
+
+		purchases.forEach(
+				purchase -> purchase.getBoughtIngredients().forEach(ingredient -> leftovers.add(ingredient.clone())));
 
 		leftovers.forEach(ingredient -> {
 			if (shoppingList.contains(ingredient))

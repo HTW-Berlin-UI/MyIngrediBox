@@ -1,10 +1,5 @@
 package myIngrediBox.ontologies;
 
-public enum Unit 
-{
-	Liter,
-	Kilo,
-	Piece,
-	Bund,
-	Size;
+public enum Unit {
+	Liter, Kilo, Piece, Bunch
 }
