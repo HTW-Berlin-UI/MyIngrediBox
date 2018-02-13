@@ -24,7 +24,8 @@ public class CalculateLeftovers extends OneShotBehaviour {
 
 		ArrayList<Ingredient> leftovers = new ArrayList<Ingredient>();
 
-		purchases.forEach(purchase -> leftovers.addAll(purchase.getBoughtIngredients()));
+		purchases.forEach(
+				purchase -> purchase.getBoughtIngredients().forEach(ingredient -> leftovers.add(ingredient.clone())));
 
 		leftovers.forEach(ingredient -> {
 			if (shoppingList.contains(ingredient))

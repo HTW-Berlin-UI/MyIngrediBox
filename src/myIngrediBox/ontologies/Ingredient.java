@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import jade.content.Concept;
 
-public class Ingredient implements Concept {
+public class Ingredient implements Concept, Cloneable {
 
 	private String name;
 	private double quantity;
@@ -65,6 +65,10 @@ public class Ingredient implements Concept {
 	// make this printable
 	public String toString() {
 		return this.quantity + "\t " + this.unit + "\t " + this.name;
+	}
+
+	public Ingredient clone() {
+		return new Ingredient(this.name, this.quantity, this.unit);
 	}
 
 }
