@@ -34,6 +34,7 @@ public abstract class BuyingController {
 				if (shoppingList.containsKey(ingredient)) {
 
 					// find the comparable ingredient on shopping list
+
 					for (PurchasableIngredient ingredientOnList : shoppingList.keySet()) {
 						if (ingredientOnList.equals(ingredient)) {
 

@@ -2,6 +2,7 @@ package myIngrediBox.agents.ingrediBuyer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Vector;
 
 import jade.content.lang.Codec.CodecException;
@@ -134,7 +135,8 @@ public class GoShopping extends ContractNetInitiator {
 			ArrayList<PurchasableIngredient> ingredientsToBuy = new ArrayList<PurchasableIngredient>();
 
 			// if market appears on shopping list than add appropriate ingredients to order
-			for (PurchasableIngredient ingredientOnList : shoppingList.keySet()) {
+			Set<PurchasableIngredient> ingredientsOnList = shoppingList.keySet();
+			for (PurchasableIngredient ingredientOnList : ingredientsOnList) {
 				if (shoppingList.get(ingredientOnList).equals(proposal.getSender()))
 					ingredientsToBuy.add(ingredientOnList);
 			}
