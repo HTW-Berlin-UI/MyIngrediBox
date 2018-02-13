@@ -1,5 +1,8 @@
 package myIngrediBox.ontologies;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 public class PurchasableIngredient extends Ingredient {
 
 	/**
@@ -19,7 +22,11 @@ public class PurchasableIngredient extends Ingredient {
 
 	// include price when printed
 	public String toString() {
-		return super.toString() + "\t" + this.price + "€";
+
+		Double currencyAmount = this.price;
+		NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.getDefault());
+
+		return super.toString() + "\t" + currencyFormatter.format(currencyAmount);
 	}
 
 }

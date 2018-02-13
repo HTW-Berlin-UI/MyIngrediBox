@@ -1,6 +1,8 @@
 package myIngrediBox.gui;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import myIngrediBox.ontologies.Ingredient;
@@ -32,7 +34,10 @@ public class ResultNotification {
 		message.append("\nThis goes back to your inventory:\n\n");
 		leftovers.forEach(leftover -> message.append(leftover + "\n"));
 
-		message.append("\nTotal Price:\t" + this.getTotalPrice() + " €");
+		Double currencyAmount = this.getTotalPrice();
+		NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.getDefault());
+
+		message.append("\nTotal Price:\t" + currencyFormatter.format(currencyAmount));
 		message.append("\n-------------------");
 
 		return message.toString();

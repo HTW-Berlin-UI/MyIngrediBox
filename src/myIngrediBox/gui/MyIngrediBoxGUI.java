@@ -47,7 +47,7 @@ public class MyIngrediBoxGUI extends JFrame {
 		add(inputWrap, BorderLayout.WEST);
 		add(outputPanel, BorderLayout.CENTER);
 
-		setBounds(300, 200, 650, 632);
+		setBounds(200, 100, 660, 632);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
 
